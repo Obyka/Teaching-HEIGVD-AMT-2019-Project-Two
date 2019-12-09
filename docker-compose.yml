@@ -1,0 +1,21 @@
+version: '3'
+
+services: 
+  mysql:
+    build: ./images/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD=admin
+    ports:
+      - "3306:3306"
+  phpmyadmin: 
+    build: ./images/phpmyadmin
+    environment:
+      MYSQL_ROOT_PASSWORD=admin
+    ports:
+      - "8081:80"
+    links:
+      mysql:db
+  spring-pokemon-project:
+    build: ./images/spring-pokemon-project
+    ports:
+      -"8080:8080"

@@ -2,6 +2,7 @@ package ch.heig.amt.pokemon.api.endpoints;
 
 import ch.heig.amt.pokemon.api.ApiUtil;
 import ch.heig.amt.pokemon.api.CapturesApi;
+import ch.heig.amt.pokemon.api.exceptions.CaptureNotFoundException;
 import ch.heig.amt.pokemon.api.model.*;
 import ch.heig.amt.pokemon.entities.CaptureEntity;
 import ch.heig.amt.pokemon.repositories.CaptureRepository;
@@ -46,25 +47,28 @@ public class CapturesApiControllers implements CapturesApi {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    @ApiOperation(value = "", nickname = "getPokemonWithTrainers", notes = "Get a specific pokemon with his all trainers", response = CapturePokemonTrainers.class, tags={  })
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "success", response = CapturePokemonTrainers.class) })
-    @RequestMapping(value = "/captures/pokemons/{id_pokemon}",
-            produces = { "application/json" },
-            method = RequestMethod.GET)
     public ResponseEntity<CapturePokemonTrainers> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"trainers\" : [ { \"dateCapture\" : \"2000-01-23T04:56:07.000+00:00\", \"idTrainer\" : 1 }, { \"dateCapture\" : \"2000-01-23T04:56:07.000+00:00\", \"idTrainer\" : 1 } ], \"id\" : 0, \"idPokemon\" : 6 }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        List<Optional<CaptureEntity>> optionalCapturePokemonTrainers = captureRepository.findByidPokemon(idPokemon);
 
+        if(optionalCapturePokemonTrainers.isEmpty()) {
+            throw new CaptureNotFoundException("Pokemon with ID : " + idPokemon + " not found.");
+        }
+
+        CapturePokemonTrainers capturePokemonTrainers = new CapturePokemonTrainers();
+        CaptureTrainer captureTrainer = new CaptureTrainer();
+
+        for(Optional<CaptureEntity> optionalCapturesEntity : optionalCapturePokemonTrainers) {
+            CaptureEntity captureEntity = optionalCapturesEntity.get();
+
+            captureTrainer.setDateCapture(captureEntity.getDateCapture());
+            captureTrainer.setIdTrainer(captureEntity.getIdTrainer());
+
+            capturePokemonTrainers.setId(captureEntity.getId());
+            capturePokemonTrainers.setIdPokemon(captureEntity.getIdPokemon());
+            capturePokemonTrainers.addTrainersItem(captureTrainer);
+        }
+
+        return ResponseEntity.ok(capturePokemonTrainers);
     }
 
 

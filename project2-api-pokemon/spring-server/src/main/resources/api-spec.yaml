@@ -416,7 +416,6 @@ definitions:
         type: integer
       dateCapture:
         type: string
-        format: date-time
 
   CaptureTrainerPokemons:
     type: object

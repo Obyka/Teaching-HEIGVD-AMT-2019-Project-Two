@@ -408,7 +408,6 @@ definitions:
         type: integer
       dateCapture:
         type: string
-        format: date-time
 
   CaptureTrainer:
     type: object

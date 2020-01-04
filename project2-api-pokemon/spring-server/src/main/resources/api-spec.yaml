@@ -312,7 +312,7 @@ paths:
         '200':
           description: success
           schema:
-            $ref: '#/definitions/CaptureTrainerPokemons'
+            $ref: '#/definitions/CaptureGetAll'
         '404':
           description: Not found
       parameters:
@@ -332,7 +332,7 @@ paths:
         '200':
           description: success
           schema:
-            $ref: '#/definitions/CapturePokemonTrainers'
+            $ref: '#/definitions/CaptureGetAll'
         '404':
           description: Not found
       parameters:
@@ -394,11 +394,11 @@ definitions:
           $ref: '#/definitions/CapturePokemon'
 
   CaptureWithId:
-    type: object
-    properties:
-      id:
-        type: integer
     allOf:
+      - type: object
+        properties:
+          id:
+            type: integer
       - $ref: '#/definitions/Capture'
 
   CapturePokemon:
@@ -408,33 +408,23 @@ definitions:
         type: integer
       dateCapture:
         type: string
-        format: date-time
 
-  CaptureTrainer:
+  CaptureGet:
     type: object
     properties:
+      idCapture:
+        type: integer
+      idPokemon:
+        type: integer
       idTrainer:
         type: integer
       dateCapture:
         type: string
-        format: date-time
 
-  CaptureTrainerPokemons:
+  CaptureGetAll:
     type: object
     properties:
-      id:
-        type: integer
-    allOf:
-      - $ref: '#/definitions/Capture'
-
-  CapturePokemonTrainers:
-    type: object
-    properties:
-      id:
-        type: integer
-      idPokemon:
-        type: integer
-      trainers:
+      captures:
         type: array
         items:
-          $ref: '#/definitions/CaptureTrainer'
+          $ref: '#/definitions/CaptureGet'

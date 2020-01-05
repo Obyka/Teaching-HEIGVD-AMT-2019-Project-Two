@@ -5,6 +5,7 @@ import ch.heig.amt.pokemon.api.CapturesApi;
 import ch.heig.amt.pokemon.api.exceptions.CaptureNotFoundException;
 import ch.heig.amt.pokemon.api.model.*;
 import ch.heig.amt.pokemon.entities.CaptureEntity;
+import ch.heig.amt.pokemon.entities.UserEntity;
 import ch.heig.amt.pokemon.repositories.CaptureRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiOperation;
@@ -37,6 +38,12 @@ public class CapturesApiControllers implements CapturesApi {
 
     public ResponseEntity<CaptureWithId> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Capture capture) {
         List<CapturePokemon> listCapturesPokemons = capture.getPokemons();
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId((Integer)request.getAttribute("idUser"));
+        userEntity.setUsername((String)request.getAttribute("username"));
+
+        userRepository.save(userEntity);
 
         for(CapturePokemon pokemon : listCapturesPokemons) {
             CaptureEntity captureEntity = new CaptureEntity();

@@ -7,6 +7,7 @@ import ch.heig.amt.pokemon.api.exceptions.PokemonBadRequestException;
 import ch.heig.amt.pokemon.api.exceptions.PokemonNotFoundException;
 import ch.heig.amt.pokemon.api.model.Pokemon;
 import ch.heig.amt.pokemon.entities.PokemonEntity;
+import ch.heig.amt.pokemon.entities.UserEntity;
 import ch.heig.amt.pokemon.repositories.PokemonRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiOperation;
@@ -49,6 +50,11 @@ public class PokemonsApiControllers implements PokemonsApi {
 
         pokemonEntity.setIdUser((Integer)request.getAttribute("idUser"));
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId((Integer)request.getAttribute("idUser"));
+        userEntity.setUsername((String)request.getAttribute("username"));
+
+        userRepository.save(userEntity);
         PokemonEntity createdPokemonEntity = pokemonRepository.save(pokemonEntity);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdPokemonEntity.getPokeDexId()).toUri();

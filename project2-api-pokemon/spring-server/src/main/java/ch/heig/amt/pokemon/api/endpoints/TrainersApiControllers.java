@@ -6,6 +6,7 @@ import ch.heig.amt.pokemon.api.exceptions.TrainerNotFoundException;
 import ch.heig.amt.pokemon.api.model.Trainer;
 import ch.heig.amt.pokemon.api.model.TrainerWithId;
 import ch.heig.amt.pokemon.entities.TrainerEntity;
+import ch.heig.amt.pokemon.entities.UserEntity;
 import ch.heig.amt.pokemon.repositories.TrainerRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
@@ -39,6 +40,12 @@ public class TrainersApiControllers implements TrainersApi {
         TrainerEntity trainerEntity = toTrainerEntity(trainer);
 
         trainerEntity.setIdUser((Integer)request.getAttribute("idUser"));
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId((Integer)request.getAttribute("idUser"));
+        userEntity.setUsername((String)request.getAttribute("username"));
+
+        userRepository.save(userEntity);
 
         TrainerEntity createdTrainerEntity = trainerRepository.save(trainerEntity);
 

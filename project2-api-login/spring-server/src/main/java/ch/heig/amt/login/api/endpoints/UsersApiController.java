@@ -2,8 +2,10 @@ package ch.heig.amt.login.api.endpoints;
 
 import ch.heig.amt.login.api.ApiUtil;
 import ch.heig.amt.login.api.UsersApi;
+import ch.heig.amt.login.api.exceptions.ForbiddenException;
 import ch.heig.amt.login.api.model.UserToGet;
 import ch.heig.amt.login.api.model.UserToPost;
+import ch.heig.amt.login.api.util.PasswordHash;
 import ch.heig.amt.login.api.util.UtilsJWT;
 import ch.heig.amt.login.entities.UserEntity;
 import ch.heig.amt.login.repositories.UserRepository;
@@ -20,8 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
+import java.nio.file.AccessDeniedException;
+import java.security.AccessControlException;
 import java.util.Optional;
 
 @RestController
@@ -30,8 +35,22 @@ public class UsersApiController implements UsersApi {
     @Autowired
     private UserRepository userRepository;
 
-    public ResponseEntity<UserToGet> createAccount(@ApiParam(value = "" ,required=true )  @Valid @RequestBody UserToPost user) {
+    @Autowired
+    private HttpServletRequest request;
+
+    public ResponseEntity<UserToGet> createAccount(@ApiParam(value = "" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization,@ApiParam(value = "" ,required=true )  @Valid @RequestBody UserToPost user) {
+
         UserEntity userEntity = toUserEntity(user);
+
+        // Password is hashed to be entered in database
+        PasswordHash ph = new PasswordHash();
+        String finalHashedPass = "";
+        try {
+            finalHashedPass = ph.createHash(userEntity.getPassword());
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
+        userEntity.setPassword(finalHashedPass);
         UserEntity createdUserEntity = userRepository.save(userEntity);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdUserEntity.getId()).toUri();
         return ResponseEntity.created(uri).body(toUserToGet(createdUserEntity));
@@ -40,9 +59,7 @@ public class UsersApiController implements UsersApi {
 
 
     public ResponseEntity<UserToGet> getUser(@ApiParam(value = "" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization) {
-        Claims claims = UtilsJWT.decodeJWT(authorization);
-        String username = claims.getSubject();
-        UserEntity fetchedUser = userRepository.findByusername(username);
+        UserEntity fetchedUser = userRepository.findByusername((String) request.getAttribute("username"));
         UserToGet userToGet = toUserToGet(fetchedUser);
 
         return ResponseEntity.ok(userToGet);
@@ -55,6 +72,7 @@ public class UsersApiController implements UsersApi {
         userEntity.setMail(user.getMail());
         userEntity.setPassword(user.getPassword());
         userEntity.setUsername(user.getUsername());
+        userEntity.setIsadmin(user.getIsadmin());
         return userEntity;
     }
 
@@ -65,6 +83,7 @@ public class UsersApiController implements UsersApi {
         userToGet.setUsername(userEntity.getUsername());
         userToGet.setLastname(userEntity.getLastname());
         userToGet.setMail(userEntity.getMail());
+        userToGet.setIsadmin(userEntity.getIsadmin());
         return userToGet;
     }
 }

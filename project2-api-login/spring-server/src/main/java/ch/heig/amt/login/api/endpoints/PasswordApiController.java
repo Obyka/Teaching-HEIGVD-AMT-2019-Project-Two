@@ -9,6 +9,7 @@ import ch.heig.amt.login.api.model.Credentials;
 import ch.heig.amt.login.api.model.QueryPasswordChange;
 import ch.heig.amt.login.api.model.UserToGet;
 import ch.heig.amt.login.api.model.ValidCreds;
+import ch.heig.amt.login.api.util.PasswordHash;
 import ch.heig.amt.login.api.util.UtilsJWT;
 import ch.heig.amt.login.entities.UserEntity;
 import ch.heig.amt.login.repositories.UserRepository;
@@ -23,20 +24,33 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
 public class PasswordApiController implements PasswordApi {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private HttpServletRequest request;
 
 
     public ResponseEntity<UserToGet> changePassword(@ApiParam(value = "" ,required=true) @RequestHeader(value="Authorization", required=true) String authorization, @ApiParam(value = "" ,required=true )  @Valid @RequestBody QueryPasswordChange queryPassword) {
-        Claims claims = UtilsJWT.decodeJWT(authorization);
-        String username = claims.getSubject();
-        UserEntity fetchedUser = userRepository.findByusername(username);
-        if(fetchedUser.getPassword().equals(queryPassword.getCurrentPassword())){
-            fetchedUser.setPassword(queryPassword.getNewPassword());
+        UserEntity fetchedUser = userRepository.findByusername((String) request.getAttribute("username"));
+
+        PasswordHash ph = new PasswordHash();
+        boolean validPass;
+        String newPassHashed;
+        try{
+            validPass = ph.validatePassword(queryPassword.getCurrentPassword(), fetchedUser.getPassword());
+            newPassHashed = ph.createHash(queryPassword.getNewPassword());
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
+
+        if(validPass){
+            fetchedUser.setPassword(newPassHashed);
             userRepository.save(fetchedUser);
             UserToGet userToGet = UsersApiController.toUserToGet(fetchedUser);
             return ResponseEntity.ok(userToGet);

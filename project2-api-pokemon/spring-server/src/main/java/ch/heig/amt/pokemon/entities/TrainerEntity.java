@@ -17,6 +17,8 @@ public class TrainerEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer trainerId;
 
+    private Integer idUser;
+
     private String name;
 
     private String surname;

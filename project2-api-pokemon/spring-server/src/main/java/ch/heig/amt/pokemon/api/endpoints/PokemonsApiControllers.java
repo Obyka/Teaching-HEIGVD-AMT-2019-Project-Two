@@ -8,6 +8,7 @@ import ch.heig.amt.pokemon.api.exceptions.PokemonNotFoundException;
 import ch.heig.amt.pokemon.api.model.Pokemon;
 import ch.heig.amt.pokemon.entities.PokemonEntity;
 import ch.heig.amt.pokemon.repositories.PokemonRepository;
+import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.*;
@@ -31,6 +33,10 @@ public class PokemonsApiControllers implements PokemonsApi {
 
     @Autowired
     private PokemonRepository pokemonRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private HttpServletRequest request;
 
     /*
        URL : /pokemons
@@ -40,6 +46,8 @@ public class PokemonsApiControllers implements PokemonsApi {
      */
     public ResponseEntity<Pokemon> createPokemon(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Pokemon pokemon) {
         PokemonEntity pokemonEntity = toEntity(pokemon);
+
+        pokemonEntity.setIdUser((Integer)request.getAttribute("idUser"));
 
         PokemonEntity createdPokemonEntity = pokemonRepository.save(pokemonEntity);
 
@@ -73,7 +81,7 @@ public class PokemonsApiControllers implements PokemonsApi {
        URL : /pokemons/
        method : DELETE
      */
-    public ResponseEntity<Void> deletePokemons(@ApiParam(value = "name of the pokemon to delete") @Valid @RequestParam(value = "name", required = false) String name,@ApiParam(value = "type of the pokemon to delete") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "category of the pokemon to delete") @Valid @RequestParam(value = "category", required = false) String category,@ApiParam(value = "height of the pokemon to delete") @Valid @RequestParam(value = "height", required = false) Integer height,@ApiParam(value = "hp of the pokemon to delete") @Valid @RequestParam(value = "hp", required = false) Integer hp) {
+    public ResponseEntity<Void> deletePokemons() {
         pokemonRepository.deleteAll();
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
@@ -98,7 +106,7 @@ public class PokemonsApiControllers implements PokemonsApi {
        URL : /pokemons
        method : GET
      */
-    public ResponseEntity<List<Pokemon>> getPokemons(@ApiParam(value = "name of the pokemon to return") @Valid @RequestParam(value = "name", required = false) String name, @ApiParam(value = "type of the pokemon to return") @Valid @RequestParam(value = "type", required = false) String type, @ApiParam(value = "category of the pokemon to return") @Valid @RequestParam(value = "category", required = false) String category, @ApiParam(value = "height of the pokemon to return") @Valid @RequestParam(value = "height", required = false) Integer height, @ApiParam(value = "hp of the pokemon to return") @Valid @RequestParam(value = "hp", required = false) Integer hp) {
+    public ResponseEntity<List<Pokemon>> getPokemons() {
         List<Pokemon> pokemons = new ArrayList<>();
         List<PokemonEntity> pokemonsEntities = new ArrayList<>();
 
@@ -139,6 +147,7 @@ public class PokemonsApiControllers implements PokemonsApi {
     private PokemonEntity toEntity(Pokemon pokemon) {
         PokemonEntity pokemonEntity = new PokemonEntity();
 
+        pokemonEntity.setIdUser(pokemon.getIdUser());
         pokemonEntity.setPokeDexId(pokemon.getPokedexId());
         pokemonEntity.setName(pokemon.getName());
         pokemonEntity.setCategory(pokemon.getCategory());
@@ -153,6 +162,7 @@ public class PokemonsApiControllers implements PokemonsApi {
     private Pokemon toPokemon(PokemonEntity pokemonEntity) {
         Pokemon pokemon = new Pokemon();
 
+        pokemon.setIdUser(pokemonEntity.getIdUser());
         pokemon.setPokedexId(pokemonEntity.getPokeDexId());
         pokemon.setName(pokemonEntity.getName());
         pokemon.setCategory(pokemonEntity.getCategory());

@@ -28,6 +28,7 @@ public class isLoggedFilter implements Filter {
         try{
             claims = UtilsJWT.decodeJWT(token);
             request.setAttribute("username", claims.getSubject());
+            request.setAttribute("idUser", claims.get("iduser"));
         } catch (Exception e){
             throw new ForbiddenException("Invalid auth token");
         }

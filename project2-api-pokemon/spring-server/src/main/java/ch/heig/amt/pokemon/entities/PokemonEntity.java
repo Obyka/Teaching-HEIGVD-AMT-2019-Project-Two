@@ -17,6 +17,8 @@ public class PokemonEntity {
     @Id
     private Integer pokeDexId;
 
+    private Integer idUser;
+
     private String name;
 
     private String type;

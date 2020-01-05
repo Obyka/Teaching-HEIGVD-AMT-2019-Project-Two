@@ -6,6 +6,7 @@ import ch.heig.amt.pokemon.api.exceptions.CaptureNotFoundException;
 import ch.heig.amt.pokemon.api.model.*;
 import ch.heig.amt.pokemon.entities.CaptureEntity;
 import ch.heig.amt.pokemon.repositories.CaptureRepository;
+import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,10 @@ public class CapturesApiControllers implements CapturesApi {
 
     @Autowired
     CaptureRepository captureRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private HttpServletRequest request;
 
     public ResponseEntity<CaptureWithId> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Capture capture) {
         List<CapturePokemon> listCapturesPokemons = capture.getPokemons();
@@ -35,6 +41,7 @@ public class CapturesApiControllers implements CapturesApi {
         for(CapturePokemon pokemon : listCapturesPokemons) {
             CaptureEntity captureEntity = new CaptureEntity();
 
+            captureEntity.setIdUser((Integer)request.getAttribute("idUser"));
             captureEntity.setIdTrainer(capture.getIdTrainer());
             captureEntity.setIdPokemon(pokemon.getIdPokemon());
             captureEntity.setDateCapture(pokemon.getDateCapture());
@@ -73,6 +80,7 @@ public class CapturesApiControllers implements CapturesApi {
         for(CaptureEntity captureEntity : capturesEntities) {
             CaptureGet captureGet = new CaptureGet();
             captureGet.setIdCapture(captureEntity.getId());
+            captureGet.setIdUser(captureEntity.getIdUser());
             captureGet.setIdTrainer(captureEntity.getIdTrainer());
             captureGet.setIdPokemon(captureEntity.getIdPokemon());
             captureGet.setDateCapture(captureEntity.getDateCapture());

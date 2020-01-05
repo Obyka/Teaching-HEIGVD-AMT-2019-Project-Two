@@ -18,6 +18,8 @@ public class CaptureEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    private Integer idUser;
+
     private Integer idTrainer;
 
     private Integer idPokemon;

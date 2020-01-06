@@ -60,7 +60,7 @@ public class CapturesApiControllers implements CapturesApi {
     }
 
     public ResponseEntity<CaptureGetAll> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon) {
-        List<CaptureEntity>  capturesEntities = captureRepository.findByidPokemon(idPokemon);
+        List<CaptureEntity>  capturesEntities = captureRepository.findByIdPokemonAndIdUser(idPokemon, (Integer)request.getAttribute("idUser"));
 
         if(capturesEntities.isEmpty()) {
             throw new CaptureNotFoundException("Pokemon with ID " + idPokemon + " not found.");
@@ -70,7 +70,7 @@ public class CapturesApiControllers implements CapturesApi {
     }
 
     public ResponseEntity<CaptureGetAll> getTrainerWithPokemons(@ApiParam(value = "trainer ID",required=true) @PathVariable("id_trainer") Integer idTrainer) {
-        List<CaptureEntity>  capturesEntities = captureRepository.findByidTrainer(idTrainer);
+        List<CaptureEntity>  capturesEntities = captureRepository.findByIdTrainerAndIdUser(idTrainer, (Integer)request.getAttribute("idUser"));
 
         if(capturesEntities.isEmpty()) {
             throw new CaptureNotFoundException("Trainer with ID " + idTrainer + " not found.");

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CaptureRepository extends CrudRepository<CaptureEntity, Integer> {
-    List<CaptureEntity> findByidPokemon(Integer id);
+    List<CaptureEntity> findByIdPokemonAndIdUser(Integer id, Integer idUser);
 
-    List<CaptureEntity> findByidTrainer(Integer id);
+    List<CaptureEntity> findByIdTrainerAndIdUser(Integer id, Integer idUser);
 }

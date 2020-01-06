@@ -58,24 +58,24 @@ public class TrainersApiControllers implements TrainersApi {
 
 
     public ResponseEntity<Void> deleteTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id) {
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findById(id);
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
 
         if(!optionalTrainerEntity.isPresent()) {
             throw new TrainerNotFoundException("Trainer not found");
         }
 
-        trainerRepository.deleteById(id);
+        trainerRepository.deleteByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 
 
     public ResponseEntity<Void> deleteTrainers() {
-        trainerRepository.deleteAll();
+        trainerRepository.deleteByIdUser((Integer)request.getAttribute("idUser"));
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 
     public ResponseEntity<TrainerWithId> getTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id) {
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findById(id);
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
 
         if(!optionalTrainerEntity.isPresent()) {
             throw new TrainerNotFoundException("Trainer not found");
@@ -91,7 +91,7 @@ public class TrainersApiControllers implements TrainersApi {
         List<TrainerWithId> trainers = new ArrayList<>();
         List<TrainerEntity> trainerEntities = new ArrayList<>();
 
-        trainerEntities = (List<TrainerEntity>) trainerRepository.findAll();
+        trainerEntities = (List<TrainerEntity>) trainerRepository.findByIdUser((Integer)request.getAttribute("idUser"));
 
         for(TrainerEntity trainerEntity : trainerEntities) {
             trainers.add(toTrainerWithId(trainerEntity));
@@ -101,7 +101,7 @@ public class TrainersApiControllers implements TrainersApi {
     }
 
     public ResponseEntity<Void> updateTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findById(id);
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
 
         if(!optionalTrainerEntity.isPresent()) {
             throw new TrainerNotFoundException("Trainer not found");

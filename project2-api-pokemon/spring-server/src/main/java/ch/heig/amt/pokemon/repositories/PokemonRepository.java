@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PokemonRepository extends CrudRepository<PokemonEntity, Integer> {
-    Optional<PokemonEntity> findByPokeDexId(Integer id);
     List<PokemonEntity> findByIdUser(Integer id);
     Optional<PokemonEntity> findByPokeDexIdAndIdUser(Integer id, Integer idUser);
 

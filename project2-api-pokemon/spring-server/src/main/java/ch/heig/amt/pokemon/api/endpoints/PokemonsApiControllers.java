@@ -73,7 +73,7 @@ public class PokemonsApiControllers implements PokemonsApi {
        method : DELETE
      */
     public ResponseEntity<Void> deletePokemonByID(@ApiParam(value = "The pokemon ID",required=true) @PathVariable("id") Integer id) {
-        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexId(id);
+        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
 
         if(!optionalPokemonEntity.isPresent()) {
             throw new PokemonNotFoundException("Pokemon " + id + " not found");

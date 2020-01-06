@@ -2,7 +2,6 @@ package ch.heig.amt.pokemon.api.filters;
 
 import ch.heig.amt.pokemon.api.exceptions.ForbiddenException;
 import ch.heig.amt.pokemon.api.util.UtilsJWT;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jsonwebtoken.Claims;
 
 import javax.servlet.*;

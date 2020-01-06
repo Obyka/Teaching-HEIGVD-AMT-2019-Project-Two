@@ -3,10 +3,15 @@ package ch.heig.amt.pokemon.api.endpoints;
 import ch.heig.amt.pokemon.api.ApiUtil;
 import ch.heig.amt.pokemon.api.CapturesApi;
 import ch.heig.amt.pokemon.api.exceptions.CaptureNotFoundException;
+import ch.heig.amt.pokemon.api.exceptions.TrainerNotFoundException;
 import ch.heig.amt.pokemon.api.model.*;
 import ch.heig.amt.pokemon.entities.CaptureEntity;
+import ch.heig.amt.pokemon.entities.PokemonEntity;
+import ch.heig.amt.pokemon.entities.TrainerEntity;
 import ch.heig.amt.pokemon.entities.UserEntity;
 import ch.heig.amt.pokemon.repositories.CaptureRepository;
+import ch.heig.amt.pokemon.repositories.PokemonRepository;
+import ch.heig.amt.pokemon.repositories.TrainerRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -35,6 +40,10 @@ public class CapturesApiControllers implements CapturesApi {
     private UserRepository userRepository;
     @Autowired
     private HttpServletRequest request;
+    @Autowired
+    TrainerRepository trainerRepository;
+    @Autowired
+    PokemonRepository pokemonRepository;
 
     public ResponseEntity<CaptureWithId> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Capture capture) {
         List<CapturePokemon> listCapturesPokemons = capture.getPokemons();
@@ -42,6 +51,12 @@ public class CapturesApiControllers implements CapturesApi {
         UserEntity userEntity = new UserEntity();
         userEntity.setId((Integer)request.getAttribute("idUser"));
         userEntity.setUsername((String)request.getAttribute("username"));
+
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(capture.getIdTrainer(), (Integer)request.getAttribute("idUser"));
+
+        if(!optionalTrainerEntity.isPresent()) {
+            throw new TrainerNotFoundException("Trainer with ID " + capture.getIdTrainer() + " does not belong to you.");
+        }
 
         userRepository.save(userEntity);
 
@@ -53,7 +68,11 @@ public class CapturesApiControllers implements CapturesApi {
             captureEntity.setIdPokemon(pokemon.getIdPokemon());
             captureEntity.setDateCapture(pokemon.getDateCapture());
 
-            captureRepository.save(captureEntity);
+            Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(pokemon.getIdPokemon(), (Integer)request.getAttribute("idUser"));
+
+            if(optionalPokemonEntity.isPresent()) {
+                captureRepository.save(captureEntity);
+            }
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

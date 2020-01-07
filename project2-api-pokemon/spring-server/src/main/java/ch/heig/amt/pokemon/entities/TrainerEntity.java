@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -17,10 +18,13 @@ public class TrainerEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer trainerId;
 
+    @NotNull
     private Integer idUser;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String surname;
 
     private String gender;

@@ -8,6 +8,7 @@ import ch.heig.amt.pokemon.api.exceptions.PokemonNotFoundException;
 import ch.heig.amt.pokemon.api.model.Pokemon;
 import ch.heig.amt.pokemon.entities.PokemonEntity;
 import ch.heig.amt.pokemon.entities.UserEntity;
+import ch.heig.amt.pokemon.repositories.CaptureRepository;
 import ch.heig.amt.pokemon.repositories.PokemonRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,8 @@ import java.util.*;
 @RestController
 public class PokemonsApiControllers implements PokemonsApi {
 
+    @Autowired
+    private CaptureRepository captureRepository;
     @Autowired
     private PokemonRepository pokemonRepository;
     @Autowired
@@ -80,6 +83,8 @@ public class PokemonsApiControllers implements PokemonsApi {
         }
 
         pokemonRepository.deleteByPokeDexIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        captureRepository.deleteByIdPokemonAndAndIdUser(id, (Integer)request.getAttribute("idUser"));
+
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 
@@ -89,6 +94,7 @@ public class PokemonsApiControllers implements PokemonsApi {
      */
     public ResponseEntity<Void> deletePokemons() {
         pokemonRepository.deleteByIdUser((Integer)request.getAttribute("idUser"));
+        captureRepository.deleteByIdUser((Integer)request.getAttribute("idUser"));
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 

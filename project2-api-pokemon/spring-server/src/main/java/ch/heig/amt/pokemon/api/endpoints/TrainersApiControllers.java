@@ -7,6 +7,7 @@ import ch.heig.amt.pokemon.api.model.Trainer;
 import ch.heig.amt.pokemon.api.model.TrainerWithId;
 import ch.heig.amt.pokemon.entities.TrainerEntity;
 import ch.heig.amt.pokemon.entities.UserEntity;
+import ch.heig.amt.pokemon.repositories.CaptureRepository;
 import ch.heig.amt.pokemon.repositories.TrainerRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
@@ -30,6 +31,8 @@ import java.util.Optional;
 public class TrainersApiControllers implements TrainersApi {
 
     @Autowired
+    private CaptureRepository captureRepository;
+    @Autowired
     private TrainerRepository trainerRepository;
     @Autowired
     private UserRepository userRepository;
@@ -38,11 +41,12 @@ public class TrainersApiControllers implements TrainersApi {
 
     public ResponseEntity<TrainerWithId> createTrainer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {
         TrainerEntity trainerEntity = toTrainerEntity(trainer);
+        Integer idUser = (Integer)request.getAttribute("idUser");
 
-        trainerEntity.setIdUser((Integer)request.getAttribute("idUser"));
+        trainerEntity.setIdUser(idUser);
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setId((Integer)request.getAttribute("idUser"));
+        userEntity.setId(idUser);
         userEntity.setUsername((String)request.getAttribute("username"));
 
         userRepository.save(userEntity);
@@ -58,24 +62,34 @@ public class TrainersApiControllers implements TrainersApi {
 
 
     public ResponseEntity<Void> deleteTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id) {
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
             throw new TrainerNotFoundException("Trainer not found");
         }
 
-        trainerRepository.deleteByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        trainerRepository.deleteByTrainerIdAndIdUser(id, idUser);
+        captureRepository.deleteByIdTrainerAndIdUser(id, idUser);
+
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 
 
     public ResponseEntity<Void> deleteTrainers() {
-        trainerRepository.deleteByIdUser((Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        trainerRepository.deleteByIdUser(idUser);
+        captureRepository.deleteByIdUser(idUser);
+
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 
     public ResponseEntity<TrainerWithId> getTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id) {
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
             throw new TrainerNotFoundException("Trainer not found");
@@ -88,10 +102,12 @@ public class TrainersApiControllers implements TrainersApi {
 
 
     public ResponseEntity<List<TrainerWithId>> getTrainers() {
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
         List<TrainerWithId> trainers = new ArrayList<>();
         List<TrainerEntity> trainerEntities = new ArrayList<>();
 
-        trainerEntities = (List<TrainerEntity>) trainerRepository.findByIdUser((Integer)request.getAttribute("idUser"));
+        trainerEntities = (List<TrainerEntity>) trainerRepository.findByIdUser(idUser);
 
         for(TrainerEntity trainerEntity : trainerEntities) {
             trainers.add(toTrainerWithId(trainerEntity));
@@ -101,7 +117,9 @@ public class TrainersApiControllers implements TrainersApi {
     }
 
     public ResponseEntity<Void> updateTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
             throw new TrainerNotFoundException("Trainer not found");

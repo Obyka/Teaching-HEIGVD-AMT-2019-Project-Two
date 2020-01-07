@@ -50,11 +50,12 @@ public class PokemonsApiControllers implements PokemonsApi {
      */
     public ResponseEntity<Pokemon> createPokemon(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Pokemon pokemon) {
         PokemonEntity pokemonEntity = toEntity(pokemon);
+        Integer idUser = (Integer)request.getAttribute("idUser");
 
-        pokemonEntity.setIdUser((Integer)request.getAttribute("idUser"));
+        pokemonEntity.setIdUser(idUser);
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setId((Integer)request.getAttribute("idUser"));
+        userEntity.setId(idUser);
         userEntity.setUsername((String)request.getAttribute("username"));
 
         userRepository.save(userEntity);
@@ -76,14 +77,16 @@ public class PokemonsApiControllers implements PokemonsApi {
        method : DELETE
      */
     public ResponseEntity<Void> deletePokemonByID(@ApiParam(value = "The pokemon ID",required=true) @PathVariable("id") Integer id) {
-        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(id, idUser);
 
         if(!optionalPokemonEntity.isPresent()) {
             throw new PokemonNotFoundException("Pokemon " + id + " not found");
         }
 
-        pokemonRepository.deleteByPokeDexIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
-        captureRepository.deleteByIdPokemonAndAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        pokemonRepository.deleteByPokeDexIdAndIdUser(id, idUser);
+        captureRepository.deleteByIdPokemonAndAndIdUser(id, idUser);
 
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
@@ -93,8 +96,10 @@ public class PokemonsApiControllers implements PokemonsApi {
        method : DELETE
      */
     public ResponseEntity<Void> deletePokemons() {
-        pokemonRepository.deleteByIdUser((Integer)request.getAttribute("idUser"));
-        captureRepository.deleteByIdUser((Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        pokemonRepository.deleteByIdUser(idUser);
+        captureRepository.deleteByIdUser(idUser);
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 
@@ -103,7 +108,9 @@ public class PokemonsApiControllers implements PokemonsApi {
        method : GET
      */
     public ResponseEntity<Pokemon> getPokemonByID(@ApiParam(value = "The pokemon ID",required=true) @PathVariable("id") Integer id) {
-        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(id, idUser);
 
         if(!optionalPokemonEntity.isPresent()) {
             throw new PokemonNotFoundException("Pokemon " + id + " not found");
@@ -119,10 +126,12 @@ public class PokemonsApiControllers implements PokemonsApi {
        method : GET
      */
     public ResponseEntity<List<Pokemon>> getPokemons() {
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
         List<Pokemon> pokemons = new ArrayList<>();
         List<PokemonEntity> pokemonsEntities = new ArrayList<>();
 
-        pokemonsEntities = (List<PokemonEntity>) pokemonRepository.findByIdUser((Integer)request.getAttribute("idUser"));
+        pokemonsEntities = (List<PokemonEntity>) pokemonRepository.findByIdUser(idUser);
 
         for(PokemonEntity pokemonEntity : pokemonsEntities) {
             pokemons.add(toPokemon(pokemonEntity));
@@ -136,15 +145,18 @@ public class PokemonsApiControllers implements PokemonsApi {
        method : PUT
      */
     public ResponseEntity<Void> updatePokemonByID(@ApiParam(value = "The pokemon ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody Pokemon pokemon) {
-        Optional<PokemonEntity> pokemonEntityOptional = pokemonRepository.findByPokeDexIdAndIdUser(id, (Integer)request.getAttribute("idUser"));
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<PokemonEntity> pokemonEntityOptional = pokemonRepository.findByPokeDexIdAndIdUser(id, idUser);
 
         if(!pokemonEntityOptional.isPresent()) {
             throw new PokemonNotFoundException("Pokemon " + id + " not found");
         }
 
         Pokemon pokemonToUpdate = toPokemon(pokemonEntityOptional.get());
-
+        
         pokemonToUpdate.setPokedexId(pokemon.getPokedexId());
+        pokemonToUpdate.setName(pokemon.getName());
         pokemonToUpdate.setType(pokemon.getType());
         pokemonToUpdate.setHp(pokemon.getHp());
         pokemonToUpdate.setHeight(pokemon.getHeight());

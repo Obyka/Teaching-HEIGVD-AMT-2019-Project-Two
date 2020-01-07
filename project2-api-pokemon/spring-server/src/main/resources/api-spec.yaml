@@ -214,7 +214,7 @@ paths:
         '201':
           description: created
           schema:
-            $ref: '#/definitions/CaptureWithId'
+            $ref: '#/definitions/CaptureAllWithId'
         '400':
           description: Bad request
 
@@ -352,3 +352,11 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/CaptureGet'
+
+  CaptureAllWithId:
+    type: object
+    properties:
+      addedCaptures:
+        type: array
+        items:
+          $ref: '#/definitions/CaptureWithId'

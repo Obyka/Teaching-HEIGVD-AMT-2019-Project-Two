@@ -45,7 +45,7 @@ public class CapturesApiControllers implements CapturesApi {
     @Autowired
     PokemonRepository pokemonRepository;
 
-    public ResponseEntity<CaptureWithId> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Capture capture) {
+    public ResponseEntity<CaptureAllWithId> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Capture capture) {
         List<CapturePokemon> listCapturesPokemons = capture.getPokemons();
 
         UserEntity userEntity = new UserEntity();
@@ -60,6 +60,8 @@ public class CapturesApiControllers implements CapturesApi {
 
         userRepository.save(userEntity);
 
+        CaptureAllWithId captureAllWithId = new CaptureAllWithId();
+
         for(CapturePokemon pokemon : listCapturesPokemons) {
             CaptureEntity captureEntity = new CaptureEntity();
 
@@ -71,11 +73,25 @@ public class CapturesApiControllers implements CapturesApi {
             Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(pokemon.getIdPokemon(), (Integer)request.getAttribute("idUser"));
 
             if(optionalPokemonEntity.isPresent()) {
-                captureRepository.save(captureEntity);
+                CaptureEntity addedCaptureEntity = captureRepository.save(captureEntity);
+
+                CaptureWithId captureWithId = new CaptureWithId();
+                CapturePokemon capturePokemon = new CapturePokemon();
+
+                captureWithId.setId(addedCaptureEntity.getId());
+                captureWithId.setIdTrainer(addedCaptureEntity.getIdTrainer());
+                captureWithId.setIdUser(addedCaptureEntity.getIdUser());
+
+                capturePokemon.setIdPokemon(addedCaptureEntity.getIdPokemon());
+                capturePokemon.setDateCapture(addedCaptureEntity.getDateCapture());
+
+                captureWithId.addPokemonsItem(capturePokemon);
+
+                captureAllWithId.addAddedCapturesItem(captureWithId);
             }
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(captureAllWithId, HttpStatus.OK);
     }
 
     public ResponseEntity<CaptureGetAll> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon) {

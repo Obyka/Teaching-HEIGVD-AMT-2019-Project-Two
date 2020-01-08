@@ -114,9 +114,8 @@ public class CapturesApiControllers implements CapturesApi {
 
         Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(capture.getIdPokemon(), idUser);
 
-        if(optionalPokemonEntity.isPresent()) {
+        if(!optionalPokemonEntity.isPresent()) {
             throw new PokemonNotFoundException("Pokemon with ID " + capture.getIdPokemon() + " does not belong to you or does not exist.");
-
         }
 
 

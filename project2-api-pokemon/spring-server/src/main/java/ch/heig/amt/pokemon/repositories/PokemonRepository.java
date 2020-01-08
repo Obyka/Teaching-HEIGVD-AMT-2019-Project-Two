@@ -1,18 +1,20 @@
 package ch.heig.amt.pokemon.repositories;
 
 import ch.heig.amt.pokemon.entities.PokemonEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PokemonRepository extends CrudRepository<PokemonEntity, Integer> {
-    List<PokemonEntity> findByIdUser(Integer id);
+public interface PokemonRepository  extends PagingAndSortingRepository<PokemonEntity, Integer> {
     Optional<PokemonEntity> findByPokeDexIdAndIdUser(Integer id, Integer idUser);
+
+    Page<PokemonEntity> findAllByIdUser(Integer id , Pageable pageable);
+
 
     @Transactional
     Long deleteByIdUser(Integer id);

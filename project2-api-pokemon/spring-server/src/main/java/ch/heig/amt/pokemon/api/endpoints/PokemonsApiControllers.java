@@ -16,6 +16,9 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -123,19 +126,14 @@ public class PokemonsApiControllers implements PokemonsApi {
        URL : /pokemons
        method : GET
      */
-    public ResponseEntity<List<Pokemon>> getPokemons() {
+    public ResponseEntity<List<Pokemon>> getPokemons(@ApiParam(value = "The page number to get", defaultValue = "0") @Valid @RequestParam(value = "page", required = false, defaultValue="0") Integer page,@ApiParam(value = "The size of a page", defaultValue = "20") @Valid @RequestParam(value = "size", required = false, defaultValue="20") Integer size) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        List<Pokemon> pokemons = new ArrayList<>();
-        List<PokemonEntity> pokemonsEntities = new ArrayList<>();
+        Pageable paging = PageRequest.of(page, size);
+        Page<PokemonEntity> pagedPokemon = pokemonRepository.findAllByIdUser(idUser, paging);
 
-        pokemonsEntities = (List<PokemonEntity>) pokemonRepository.findByIdUser(idUser);
-
-        for(PokemonEntity pokemonEntity : pokemonsEntities) {
-            pokemons.add(toPokemon(pokemonEntity));
-        }
-
-        return ResponseEntity.ok(pokemons);
+        Page<Pokemon> pageResult = pagedPokemon.map(pokemonEntity -> toPokemon(pokemonEntity));
+        return ResponseEntity.ok(pageResult.getContent());
     }
 
     /*

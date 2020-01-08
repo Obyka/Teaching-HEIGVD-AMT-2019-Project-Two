@@ -19,6 +19,9 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,32 +65,28 @@ public class CapturesApiControllers implements CapturesApi {
         return ResponseEntity.ok(toCaptureGet(captureReturned));
     }
 
-    public ResponseEntity<List<CaptureGet>> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon) {
+    public ResponseEntity<List<CaptureGet>> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon,@ApiParam(value = "The page number to get", defaultValue = "0") @Valid @RequestParam(value = "page", required = false, defaultValue="0") Integer page,@ApiParam(value = "The size of a page", defaultValue = "20") @Valid @RequestParam(value = "size", required = false, defaultValue="20") Integer size) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        Optional<PokemonEntity> pokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(idPokemon,idUser);
-        List<CaptureGet> captureGets = new ArrayList<>();
-        List<CaptureEntity> capturesEntities = captureRepository.findByPokemonAndIdUser(pokemonEntity.get(), idUser);
+        Optional<PokemonEntity> optionalPokemon = pokemonRepository.findById(idPokemon);
+        PokemonEntity pokemonEntity = optionalPokemon.get();
+        Pageable paging = PageRequest.of(page, size);
+        Page<CaptureEntity> captureEntityPage = captureRepository.findAllByPokemonAndIdUser(pokemonEntity,idUser, paging);
 
-        for(CaptureEntity captureEntity : capturesEntities){
-            captureGets.add(toCaptureGet(captureEntity));
-        }
-
-        return ResponseEntity.ok(captureGets);
+        Page<CaptureGet> pageResult = captureEntityPage.map(this::toCaptureGet);
+        return ResponseEntity.ok(pageResult.getContent());
     }
 
-    public ResponseEntity<List<CaptureGet>> getTrainerWithPokemons(@ApiParam(value = "trainer ID",required=true) @PathVariable("id_trainer") Integer idTrainer) {
+    public ResponseEntity<List<CaptureGet>> getTrainerWithPokemons(@ApiParam(value = "trainer ID",required=true) @PathVariable("id_trainer") Integer idTrainer,@ApiParam(value = "The page number to get", defaultValue = "0") @Valid @RequestParam(value = "page", required = false, defaultValue="0") Integer page,@ApiParam(value = "The size of a page", defaultValue = "20") @Valid @RequestParam(value = "size", required = false, defaultValue="20") Integer size) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        List<CaptureGet> captureGets = new ArrayList<>();
-        Optional<TrainerEntity> trainerEntity = trainerRepository.findById(idTrainer);
-        List<CaptureEntity> capturesEntities = captureRepository.findByTrainerAndIdUser(trainerEntity.get(), idUser);
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findById(idTrainer);
+        TrainerEntity trainerEntity = optionalTrainerEntity.get();
+        Pageable paging = PageRequest.of(page, size);
+        Page<CaptureEntity> captureEntityPage = captureRepository.findAllByTrainerAndIdUser(trainerEntity,idUser, paging);
 
-        for(CaptureEntity captureEntity : capturesEntities){
-            captureGets.add(toCaptureGet(captureEntity));
-        }
-
-        return ResponseEntity.ok(captureGets);
+        Page<CaptureGet> pageResult = captureEntityPage.map(this::toCaptureGet);
+        return ResponseEntity.ok(pageResult.getContent());
     }
 
     private CaptureGet toCaptureGet(CaptureEntity captureEntity) {

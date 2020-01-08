@@ -209,12 +209,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Capture'
+            $ref: '#/definitions/CapturePost'
       responses:
         '201':
           description: created
           schema:
-            $ref: '#/definitions/CaptureAllWithId'
+            $ref: '#/definitions/CaptureGet'
         '400':
           description: Bad request
 
@@ -228,7 +228,9 @@ paths:
         '200':
           description: success
           schema:
-            $ref: '#/definitions/CaptureGetAll'
+            type: array
+            items:
+              $ref: '#/definitions/CaptureGet'
         '404':
           description: Not found
       parameters:
@@ -248,7 +250,9 @@ paths:
         '200':
           description: success
           schema:
-            $ref: '#/definitions/CaptureGetAll'
+            type: array
+            items:
+              $ref: '#/definitions/CaptureGet'
         '404':
           description: Not found
       parameters:
@@ -303,60 +307,25 @@ definitions:
             type: integer
       - $ref: '#/definitions/Trainer'
 
-  Capture:
-    type: object
-    properties:
-      idUser:
-        type: integer
-      idTrainer:
-        type: integer
-      pokemons:
-        type: array
-        items:
-          $ref: '#/definitions/CapturePokemon'
-
-  CaptureWithId:
-    allOf:
-      - type: object
-        properties:
-          id:
-            type: integer
-      - $ref: '#/definitions/Capture'
-
-  CapturePokemon:
+  CapturePost:
     type: object
     properties:
       idPokemon:
+        type: integer
+      idTrainer:
         type: integer
       dateCapture:
         type: string
 
   CaptureGet:
-    type: object
-    properties:
-      idUser:
-        type: integer
-      idCapture:
-        type: integer
-      idPokemon:
-        type: integer
-      idTrainer:
-        type: integer
-      dateCapture:
-        type: string
-
-  CaptureGetAll:
-    type: object
-    properties:
-      captures:
-        type: array
-        items:
-          $ref: '#/definitions/CaptureGet'
-
-  CaptureAllWithId:
-    type: object
-    properties:
-      addedCaptures:
-        type: array
-        items:
-          $ref: '#/definitions/CaptureWithId'
+    allOf:
+      - type: object
+        required:
+          - idUser
+          - idCapture
+        properties:
+          idUser:
+            type: integer
+          idCapture:
+            type: integer
+      - $ref: '#/definitions/CapturePost'

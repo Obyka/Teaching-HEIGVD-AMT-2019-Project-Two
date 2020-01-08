@@ -71,7 +71,6 @@ public class TrainersApiControllers implements TrainersApi {
         }
 
         trainerRepository.deleteByTrainerIdAndIdUser(id, idUser);
-        captureRepository.deleteByIdTrainerAndIdUser(id, idUser);
 
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
@@ -81,7 +80,6 @@ public class TrainersApiControllers implements TrainersApi {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
         trainerRepository.deleteByIdUser(idUser);
-        captureRepository.deleteByIdUser(idUser);
 
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }

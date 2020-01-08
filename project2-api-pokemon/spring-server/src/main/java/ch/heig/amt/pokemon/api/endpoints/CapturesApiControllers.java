@@ -3,6 +3,7 @@ package ch.heig.amt.pokemon.api.endpoints;
 import ch.heig.amt.pokemon.api.ApiUtil;
 import ch.heig.amt.pokemon.api.CapturesApi;
 import ch.heig.amt.pokemon.api.exceptions.CaptureNotFoundException;
+import ch.heig.amt.pokemon.api.exceptions.PokemonNotFoundException;
 import ch.heig.amt.pokemon.api.exceptions.TrainerNotFoundException;
 import ch.heig.amt.pokemon.api.model.*;
 import ch.heig.amt.pokemon.entities.CaptureEntity;
@@ -24,9 +25,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,13 +48,63 @@ public class CapturesApiControllers implements CapturesApi {
     @Autowired
     PokemonRepository pokemonRepository;
 
-    public ResponseEntity<CaptureAllWithId> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Capture capture) {
-        List<CapturePokemon> listCapturesPokemons = capture.getPokemons();
+    public ResponseEntity<CaptureGet> createCapture(@ApiParam(value = "" ,required=true )  @Valid @RequestBody CapturePost capture) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
         UserEntity userEntity = new UserEntity();
         userEntity.setId(idUser);
         userEntity.setUsername((String)request.getAttribute("username"));
+
+
+        userRepository.save(userEntity);
+        CaptureEntity captureReturned = captureRepository.save(toEntity(capture));
+
+        return ResponseEntity.ok(toCaptureGet(captureReturned));
+    }
+
+    public ResponseEntity<List<CaptureGet>> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon) {
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        Optional<PokemonEntity> pokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(idPokemon,idUser);
+        List<CaptureGet> captureGets = new ArrayList<>();
+        List<CaptureEntity> capturesEntities = captureRepository.findByPokemonAndIdUser(pokemonEntity.get(), idUser);
+
+        for(CaptureEntity captureEntity : capturesEntities){
+            captureGets.add(toCaptureGet(captureEntity));
+        }
+
+        return ResponseEntity.ok(captureGets);
+    }
+
+    public ResponseEntity<List<CaptureGet>> getTrainerWithPokemons(@ApiParam(value = "trainer ID",required=true) @PathVariable("id_trainer") Integer idTrainer) {
+        Integer idUser = (Integer)request.getAttribute("idUser");
+
+        List<CaptureGet> captureGets = new ArrayList<>();
+        Optional<TrainerEntity> trainerEntity = trainerRepository.findById(idTrainer);
+        List<CaptureEntity> capturesEntities = captureRepository.findByTrainerAndIdUser(trainerEntity.get(), idUser);
+
+        for(CaptureEntity captureEntity : capturesEntities){
+            captureGets.add(toCaptureGet(captureEntity));
+        }
+
+        return ResponseEntity.ok(captureGets);
+    }
+
+    private CaptureGet toCaptureGet(CaptureEntity captureEntity) {
+        CaptureGet captureGet = new CaptureGet();
+
+        captureGet.setDateCapture(captureEntity.getDateCapture());
+        captureGet.setIdCapture(captureEntity.getId());
+        captureGet.setIdPokemon(captureEntity.getPokemon().getPokeDexId());
+        captureGet.setIdTrainer(captureEntity.getTrainer().getTrainerId());
+        captureGet.setIdUser(captureEntity.getIdUser());
+        return captureGet;
+    }
+
+    private CaptureEntity toEntity(CapturePost capture) {
+        Integer idUser = (Integer)request.getAttribute("idUser");
+        CaptureEntity captureEntity = new CaptureEntity();
+
 
         Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(capture.getIdTrainer(), idUser);
 
@@ -59,94 +112,20 @@ public class CapturesApiControllers implements CapturesApi {
             throw new TrainerNotFoundException("Trainer with ID " + capture.getIdTrainer() + " does not belong to you or does not exist.");
         }
 
-        userRepository.save(userEntity);
+        Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(capture.getIdPokemon(), idUser);
 
-        CaptureAllWithId captureAllWithId = new CaptureAllWithId();
+        if(optionalPokemonEntity.isPresent()) {
+            throw new PokemonNotFoundException("Pokemon with ID " + capture.getIdPokemon() + " does not belong to you or does not exist.");
 
-        for(CapturePokemon pokemon : listCapturesPokemons) {
-            CaptureEntity captureEntity = toEntity(capture, pokemon);
-
-            Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(pokemon.getIdPokemon(), idUser);
-
-            if(optionalPokemonEntity.isPresent()) {
-                CaptureEntity addedCaptureEntity = captureRepository.save(captureEntity);
-
-                toCaptureAllWithId(captureAllWithId, addedCaptureEntity);
-            }
         }
 
-        return new ResponseEntity<>(captureAllWithId, HttpStatus.OK);
-    }
 
-    public ResponseEntity<CaptureGetAll> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon) {
-        Integer idUser = (Integer)request.getAttribute("idUser");
-
-        List<CaptureEntity> capturesEntities = captureRepository.findByIdPokemonAndIdUser(idPokemon, idUser);
-
-        if(capturesEntities.isEmpty()) {
-            throw new CaptureNotFoundException("Pokemon with ID " + idPokemon + " not found.");
-        }
-
-        return ResponseEntity.ok(getAndFetchResults(capturesEntities));
-    }
-
-    public ResponseEntity<CaptureGetAll> getTrainerWithPokemons(@ApiParam(value = "trainer ID",required=true) @PathVariable("id_trainer") Integer idTrainer) {
-        Integer idUser = (Integer)request.getAttribute("idUser");
-
-        List<CaptureEntity>  capturesEntities = captureRepository.findByIdTrainerAndIdUser(idTrainer, idUser);
-
-        if(capturesEntities.isEmpty()) {
-            throw new CaptureNotFoundException("Trainer with ID " + idTrainer + " not found.");
-        }
-
-        return ResponseEntity.ok(getAndFetchResults(capturesEntities));
-    }
-
-    private CaptureGetAll getAndFetchResults(List<CaptureEntity> capturesEntities) {
-        CaptureGetAll captureGetAll = new CaptureGetAll();
-
-        List<CaptureGet> captureGetList = new ArrayList<>();
-
-        for(CaptureEntity captureEntity : capturesEntities) {
-            CaptureGet captureGet = new CaptureGet();
-            captureGet.setIdCapture(captureEntity.getId());
-            captureGet.setIdUser(captureEntity.getIdUser());
-            captureGet.setIdTrainer(captureEntity.getIdTrainer());
-            captureGet.setIdPokemon(captureEntity.getIdPokemon());
-            captureGet.setDateCapture(captureEntity.getDateCapture());
-
-            captureGetAll.addCapturesItem(captureGet);
-        }
-
-        return captureGetAll;
-    }
-
-    private CaptureEntity toEntity(Capture capture, CapturePokemon capturePokemon) {
-        Integer idUser = (Integer)request.getAttribute("idUser");
-        CaptureEntity captureEntity = new CaptureEntity();
 
         captureEntity.setIdUser(idUser);
-        captureEntity.setIdTrainer(capture.getIdTrainer());
-        captureEntity.setIdPokemon(capturePokemon.getIdPokemon());
-        captureEntity.setDateCapture(capturePokemon.getDateCapture());
+        captureEntity.setTrainer(optionalTrainerEntity.get());
+        captureEntity.setPokemon(optionalPokemonEntity.get());
+        captureEntity.setDateCapture(capture.getDateCapture());
 
         return captureEntity;
     }
-
-    private void toCaptureAllWithId(CaptureAllWithId captureAllWithId, CaptureEntity addedCaptureEntity) {
-        CaptureWithId captureWithId = new CaptureWithId();
-        CapturePokemon capturePokemon = new CapturePokemon();
-
-        captureWithId.setId(addedCaptureEntity.getId());
-        captureWithId.setIdTrainer(addedCaptureEntity.getIdTrainer());
-        captureWithId.setIdUser(addedCaptureEntity.getIdUser());
-
-        capturePokemon.setIdPokemon(addedCaptureEntity.getIdPokemon());
-        capturePokemon.setDateCapture(addedCaptureEntity.getDateCapture());
-
-        captureWithId.addPokemonsItem(capturePokemon);
-
-        captureAllWithId.addAddedCapturesItem(captureWithId);
-    }
-
 }

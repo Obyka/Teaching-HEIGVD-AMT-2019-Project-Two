@@ -86,7 +86,6 @@ public class PokemonsApiControllers implements PokemonsApi {
         }
 
         pokemonRepository.deleteByPokeDexIdAndIdUser(id, idUser);
-        captureRepository.deleteByIdPokemonAndAndIdUser(id, idUser);
 
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
@@ -99,7 +98,6 @@ public class PokemonsApiControllers implements PokemonsApi {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
         pokemonRepository.deleteByIdUser(idUser);
-        captureRepository.deleteByIdUser(idUser);
         return new ResponseEntity<>(HttpStatus.valueOf(204));
     }
 

@@ -14,6 +14,17 @@ paths:
       operationId: getPokemons
       produces:
         - application/json
+      parameters:
+        - name: page
+          default: 0
+          in: query
+          type: integer
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
+          type: integer
+          description: The size of a page
       responses:
         '200':
           description: success
@@ -109,6 +120,17 @@ paths:
       operationId: getTrainers
       produces:
         - application/json
+      parameters:
+        - name: page
+          default: 0
+          in: query
+          type: integer
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
+          type: integer
+          description: The size of a page
       responses:
         '200':
           description: success
@@ -239,6 +261,16 @@ paths:
           required: true
           type: integer
           description: trainer ID
+        - name: page
+          default: 0
+          in: query
+          type: integer
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
+          type: integer
+          description: The size of a page
 
   /captures/pokemons/{id_pokemon}:
     get:
@@ -261,6 +293,16 @@ paths:
           required: true
           type: integer
           description: pokemon ID
+        - name: page
+          default: 0
+          in: query
+          type: integer
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
+          type: integer
+          description: The size of a page
 
 definitions:
   Pokemon:

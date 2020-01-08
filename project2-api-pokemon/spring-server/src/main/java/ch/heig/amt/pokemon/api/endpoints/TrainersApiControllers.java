@@ -3,8 +3,10 @@ package ch.heig.amt.pokemon.api.endpoints;
 import ch.heig.amt.pokemon.api.ApiUtil;
 import ch.heig.amt.pokemon.api.TrainersApi;
 import ch.heig.amt.pokemon.api.exceptions.TrainerNotFoundException;
+import ch.heig.amt.pokemon.api.model.Pokemon;
 import ch.heig.amt.pokemon.api.model.Trainer;
 import ch.heig.amt.pokemon.api.model.TrainerWithId;
+import ch.heig.amt.pokemon.entities.PokemonEntity;
 import ch.heig.amt.pokemon.entities.TrainerEntity;
 import ch.heig.amt.pokemon.entities.UserEntity;
 import ch.heig.amt.pokemon.repositories.CaptureRepository;
@@ -12,6 +14,9 @@ import ch.heig.amt.pokemon.repositories.TrainerRepository;
 import ch.heig.amt.pokemon.repositories.UserRepository;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -99,19 +104,14 @@ public class TrainersApiControllers implements TrainersApi {
     }
 
 
-    public ResponseEntity<List<TrainerWithId>> getTrainers() {
+    public ResponseEntity<List<TrainerWithId>> getTrainers(@ApiParam(value = "The page number to get", defaultValue = "0") @Valid @RequestParam(value = "page", required = false, defaultValue="0") Integer page,@ApiParam(value = "The size of a page", defaultValue = "20") @Valid @RequestParam(value = "size", required = false, defaultValue="20") Integer size) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        List<TrainerWithId> trainers = new ArrayList<>();
-        List<TrainerEntity> trainerEntities = new ArrayList<>();
+        Pageable paging = PageRequest.of(page, size);
+        Page<TrainerEntity> pagedTrainer = trainerRepository.findAllByIdUser(idUser, paging);
 
-        trainerEntities = (List<TrainerEntity>) trainerRepository.findByIdUser(idUser);
-
-        for(TrainerEntity trainerEntity : trainerEntities) {
-            trainers.add(toTrainerWithId(trainerEntity));
-        }
-
-        return ResponseEntity.ok(trainers);
+        Page<TrainerWithId> pageResult = pagedTrainer.map(trainerEntity -> toTrainerWithId(trainerEntity));
+        return ResponseEntity.ok(pageResult.getContent());
     }
 
     public ResponseEntity<Void> updateTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {

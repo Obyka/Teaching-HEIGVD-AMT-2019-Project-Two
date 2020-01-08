@@ -14,27 +14,6 @@ paths:
       operationId: getPokemons
       produces:
         - application/json
-      parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the pokemon to return
-        - in: query
-          name: type
-          type: string
-          description: type of the pokemon to return
-        - in: query
-          name: category
-          type: string
-          description: category of the pokemon to return
-        - in: query
-          name: height
-          type: integer
-          description: height of the pokemon to return
-        - in: query
-          name: hp
-          type: integer
-          description: hp of the pokemon to return
       responses:
         '200':
           description: success
@@ -46,27 +25,6 @@ paths:
     delete:
       operationId: deletePokemons
       description: delete the list of all pokemons
-      parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the pokemon to delete
-        - in: query
-          name: type
-          type: string
-          description: type of the pokemon to delete
-        - in: query
-          name: category
-          type: string
-          description: category of the pokemon to delete
-        - in: query
-          name: height
-          type: integer
-          description: height of the pokemon to delete
-        - in: query
-          name: hp
-          type: integer
-          description: hp of the pokemon to delete
       responses:
         204:
           description: sucessfully deleted
@@ -151,27 +109,6 @@ paths:
       operationId: getTrainers
       produces:
         - application/json
-      parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the trainer to return
-        - in: query
-          name: surname
-          type: string
-          description: surname of the trainer to return
-        - in: query
-          name: gender
-          type: string
-          description: gender of the trainer to return
-        - in: query
-          name: age
-          type: integer
-          description: age of the trainer to return
-        - in: query
-          name: numberOfBadges
-          type: integer
-          description: number of badges of the trainer to return
       responses:
         '200':
           description: success
@@ -183,27 +120,6 @@ paths:
     delete:
       operationId: deleteTrainers
       description: delete the list of all trainers
-      parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the trainer to delete
-        - in: query
-          name: surname
-          type: string
-          description: surname of the trainer to delete
-        - in: query
-          name: gender
-          type: string
-          description: gender of the trainer to delete
-        - in: query
-          name: age
-          type: integer
-          description: age of the trainer to delete
-        - in: query
-          name: numberOfBadges
-          type: integer
-          description: number of badges of the trainer to delete
       responses:
         204:
           description: sucessfully deleted
@@ -298,7 +214,7 @@ paths:
         '201':
           description: created
           schema:
-            $ref: '#/definitions/CaptureWithId'
+            $ref: '#/definitions/CaptureAllWithId'
         '400':
           description: Bad request
 
@@ -348,6 +264,8 @@ definitions:
     properties:
       pokedexId:
         type: integer
+      idUser:
+        type: integer
       name:
         type: string
       type:
@@ -362,6 +280,8 @@ definitions:
   Trainer:
     type: object
     properties:
+      idUser:
+        type: integer
       name:
         type: string
       surname:
@@ -386,6 +306,8 @@ definitions:
   Capture:
     type: object
     properties:
+      idUser:
+        type: integer
       idTrainer:
         type: integer
       pokemons:
@@ -412,6 +334,8 @@ definitions:
   CaptureGet:
     type: object
     properties:
+      idUser:
+        type: integer
       idCapture:
         type: integer
       idPokemon:
@@ -428,3 +352,11 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/CaptureGet'
+
+  CaptureAllWithId:
+    type: object
+    properties:
+      addedCaptures:
+        type: array
+        items:
+          $ref: '#/definitions/CaptureWithId'

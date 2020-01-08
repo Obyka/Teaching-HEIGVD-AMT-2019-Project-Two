@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -17,6 +18,10 @@ public class PokemonEntity {
     @Id
     private Integer pokeDexId;
 
+    @NotNull
+    private Integer idUser;
+
+    @NotNull
     private String name;
 
     private String type;

@@ -306,22 +306,14 @@ paths:
 
 definitions:
   Pokemon:
-    type: object
-    properties:
-      pokedexId:
-        type: integer
-      idUser:
-        type: integer
-      name:
-        type: string
-      type:
-        type: string
-      category:
-        type: string
-      height:
-        type: integer
-      hp:
-        type: integer
+    allOf:
+      - type: object
+        required:
+          - idUser
+        properties:
+          idUser:
+            type: integer
+      - $ref: '#/definitions/PokemonPut'
 
   PokemonPut:
     type: object
@@ -382,6 +374,7 @@ definitions:
         type: integer
       dateCapture:
         type: string
+        pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$'
 
   CaptureGet:
     allOf:

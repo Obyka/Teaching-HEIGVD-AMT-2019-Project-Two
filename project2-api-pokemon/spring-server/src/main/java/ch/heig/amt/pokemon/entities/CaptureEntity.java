@@ -2,6 +2,8 @@ package ch.heig.amt.pokemon.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 
 

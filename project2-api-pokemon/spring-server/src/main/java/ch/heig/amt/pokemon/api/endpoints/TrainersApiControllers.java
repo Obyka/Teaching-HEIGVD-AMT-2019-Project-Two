@@ -72,7 +72,7 @@ public class TrainersApiControllers implements TrainersApi {
         Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
-            throw new TrainerNotFoundException("Trainer not found");
+            throw new TrainerNotFoundException("Trainer with ID " + id + " not found");
         }
 
         trainerRepository.deleteByTrainerIdAndIdUser(id, idUser);
@@ -95,7 +95,7 @@ public class TrainersApiControllers implements TrainersApi {
         Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
-            throw new TrainerNotFoundException("Trainer not found");
+            throw new TrainerNotFoundException("Trainer with ID " + id + " not found");
         }
 
         TrainerEntity trainerEntity = optionalTrainerEntity.get();
@@ -120,7 +120,7 @@ public class TrainersApiControllers implements TrainersApi {
         Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
-            throw new TrainerNotFoundException("Trainer not found");
+            throw new TrainerNotFoundException("Trainer with ID " + id + " not found");
         }
 
         TrainerWithId updatedTrainer = addID(id,trainer);

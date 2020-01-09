@@ -2,9 +2,7 @@ package ch.heig.amt.pokemon.api.endpoints;
 
 import ch.heig.amt.pokemon.api.ApiUtil;
 import ch.heig.amt.pokemon.api.CapturesApi;
-import ch.heig.amt.pokemon.api.exceptions.CaptureNotFoundException;
-import ch.heig.amt.pokemon.api.exceptions.PokemonNotFoundException;
-import ch.heig.amt.pokemon.api.exceptions.TrainerNotFoundException;
+import ch.heig.amt.pokemon.api.exceptions.*;
 import ch.heig.amt.pokemon.api.model.*;
 import ch.heig.amt.pokemon.entities.CaptureEntity;
 import ch.heig.amt.pokemon.entities.PokemonEntity;
@@ -108,13 +106,13 @@ public class CapturesApiControllers implements CapturesApi {
         Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(capture.getIdTrainer(), idUser);
 
         if(!optionalTrainerEntity.isPresent()) {
-            throw new TrainerNotFoundException("Trainer with ID " + capture.getIdTrainer() + " does not belong to you or does not exist.");
+            throw new TrainerForbiddenException("Trainer with ID " + capture.getIdTrainer() + " does not belong to you or does not exist.");
         }
 
         Optional<PokemonEntity> optionalPokemonEntity = pokemonRepository.findByPokeDexIdAndIdUser(capture.getIdPokemon(), idUser);
 
         if(!optionalPokemonEntity.isPresent()) {
-            throw new PokemonNotFoundException("Pokemon with ID " + capture.getIdPokemon() + " does not belong to you or does not exist.");
+            throw new PokemonForbiddenException("Pokemon with ID " + capture.getIdPokemon() + " does not belong to you or does not exist.");
         }
 
 

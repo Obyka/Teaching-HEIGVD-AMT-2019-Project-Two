@@ -6,6 +6,7 @@ import ch.heig.amt.pokemon.api.exceptions.NotFoundException;
 import ch.heig.amt.pokemon.api.exceptions.PokemonBadRequestException;
 import ch.heig.amt.pokemon.api.exceptions.PokemonNotFoundException;
 import ch.heig.amt.pokemon.api.model.Pokemon;
+import ch.heig.amt.pokemon.api.model.PokemonPut;
 import ch.heig.amt.pokemon.entities.PokemonEntity;
 import ch.heig.amt.pokemon.entities.UserEntity;
 import ch.heig.amt.pokemon.repositories.CaptureRepository;
@@ -140,7 +141,7 @@ public class PokemonsApiControllers implements PokemonsApi {
        URL : /pokemons/{id}
        method : PUT
      */
-    public ResponseEntity<Void> updatePokemonByID(@ApiParam(value = "The pokemon ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody Pokemon pokemon) {
+    public ResponseEntity<Void> updatePokemonByID(@ApiParam(value = "The pokemon ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody PokemonPut pokemon) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
         Optional<PokemonEntity> pokemonEntityOptional = pokemonRepository.findByPokeDexIdAndIdUser(id, idUser);

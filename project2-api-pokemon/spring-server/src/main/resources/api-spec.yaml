@@ -107,7 +107,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Pokemon'
+            $ref: '#/definitions/PokemonPut'
       responses:
         200:
           description: success
@@ -213,7 +213,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Trainer'
+            $ref: '#/definitions/TrainerPut'
       responses:
         200:
           description: success
@@ -323,21 +323,31 @@ definitions:
       hp:
         type: integer
 
-  Trainer:
+  PokemonPut:
     type: object
     properties:
-      idUser:
+      pokedexId:
         type: integer
       name:
         type: string
-      surname:
+      type:
         type: string
-      gender:
+      category:
         type: string
-      age:
+      height:
         type: integer
-      numberOfBadges:
+      hp:
         type: integer
+
+  Trainer:
+    allOf:
+      - type: object
+        required:
+          - idUser
+        properties:
+          idUser:
+            type: integer
+      - $ref: '#/definitions/TrainerPut'
 
   TrainerWithId:
     allOf:
@@ -348,6 +358,20 @@ definitions:
           id:
             type: integer
       - $ref: '#/definitions/Trainer'
+
+  TrainerPut:
+    type: object
+    properties:
+      name:
+        type: string
+      surname:
+        type: string
+      gender:
+        type: string
+      age:
+        type: integer
+      numberOfBadges:
+        type: integer
 
   CapturePost:
     type: object

@@ -1,0 +1,46 @@
+version: '3'
+services:
+  docker-mysql:
+    restart: always
+    container_name: docker-mysql
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    expose:
+      - "3306"
+  pokemon-api:
+    expose:
+      - "8080"
+    build: api-pokemon/
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/project2-amt-pokemon
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: root 
+    depends_on:
+      - docker-mysql
+    labels:
+      - "traefik.enable=true" # Enable reverse-proxy for this service
+      - "traefik.frontend.rule=Host:pokemon.test" # Domain name for the app
+  login-api:
+    expose:
+      - "8090"
+    build: api-login/
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/project2-amt-login
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: root  
+    depends_on:
+      - docker-mysql
+    labels:
+      - "traefik.enable=true" # Enable reverse-proxy for this service
+      - "traefik.frontend.rule=Host:login.test" # Domain name for the app
+  reverse-proxy:
+    image: traefik:v2.0
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

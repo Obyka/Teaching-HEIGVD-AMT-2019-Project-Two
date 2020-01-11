@@ -50,7 +50,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Pokemon'
+            $ref: '#/definitions/PokemonPut'
       responses:
         '201':
           description: created

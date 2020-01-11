@@ -52,11 +52,10 @@ public class PokemonsApiControllers implements PokemonsApi {
        Be careful to add Accept : application/json in header request
        may be implement in a TODO
      */
-    public ResponseEntity<Pokemon> createPokemon(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Pokemon pokemon) {
-        PokemonEntity pokemonEntity = toEntity(pokemon);
+    public ResponseEntity<Pokemon> createPokemon(@ApiParam(value = "" ,required=true )  @Valid @RequestBody PokemonPut pokemon) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        pokemonEntity.setIdUser(idUser);
+        PokemonEntity pokemonEntity = toEntity(pokemon, idUser);
 
         UserEntity userEntity = new UserEntity();
         userEntity.setId(idUser);
@@ -159,16 +158,31 @@ public class PokemonsApiControllers implements PokemonsApi {
         pokemonToUpdate.setHeight(pokemon.getHeight());
         pokemonToUpdate.setCategory(pokemon.getCategory());
 
-        pokemonRepository.save(toEntity(pokemonToUpdate));
+        pokemonRepository.save(toEntity(pokemonToUpdate, idUser));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /* POJO to Entity conversion */
-    private PokemonEntity toEntity(Pokemon pokemon) {
+    private PokemonEntity toEntity(PokemonPut pokemon, Integer idUser) {
         PokemonEntity pokemonEntity = new PokemonEntity();
 
-        pokemonEntity.setIdUser(pokemon.getIdUser());
+        pokemonEntity.setIdUser(idUser);
+        pokemonEntity.setPokeDexId(pokemon.getPokedexId());
+        pokemonEntity.setName(pokemon.getName());
+        pokemonEntity.setCategory(pokemon.getCategory());
+        pokemonEntity.setHeight(pokemon.getHeight());
+        pokemonEntity.setHp(pokemon.getHp());
+        pokemonEntity.setType(pokemon.getType());
+
+        return pokemonEntity;
+    }
+
+    /* POJO to Entity conversion */
+    private PokemonEntity toEntity(Pokemon pokemon, Integer idUser) {
+        PokemonEntity pokemonEntity = new PokemonEntity();
+
+        pokemonEntity.setIdUser(idUser);
         pokemonEntity.setPokeDexId(pokemon.getPokedexId());
         pokemonEntity.setName(pokemon.getName());
         pokemonEntity.setCategory(pokemon.getCategory());

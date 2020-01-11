@@ -45,11 +45,10 @@ public class TrainersApiControllers implements TrainersApi {
     @Autowired
     private HttpServletRequest request;
 
-    public ResponseEntity<TrainerWithId> createTrainer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {
-        TrainerEntity trainerEntity = toTrainerEntity(trainer);
+    public ResponseEntity<TrainerWithId> createTrainer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody TrainerPut trainer) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        trainerEntity.setIdUser(idUser);
+        TrainerEntity trainerEntity = toTrainerEntity(trainer, idUser);
 
         UserEntity userEntity = new UserEntity();
         userEntity.setId(idUser);
@@ -152,16 +151,16 @@ public class TrainersApiControllers implements TrainersApi {
         trainerWithId.setAge(trainerEntity.getAge());
         trainerWithId.setGender(trainerEntity.getGender());
         trainerWithId.setName(trainerEntity.getName());
-        trainerWithId.setNumberOfBadges(trainerEntity.getNumberOfBadges());
         trainerWithId.setSurname(trainerEntity.getSurname());
+        trainerWithId.setNumberOfBadges(trainerEntity.getNumberOfBadges());
 
         return trainerWithId;
     }
 
-    private TrainerEntity toTrainerEntity(Trainer trainer) {
+    private TrainerEntity toTrainerEntity(TrainerPut trainer, Integer idUser) {
         TrainerEntity trainerEntity = new TrainerEntity();
 
-        trainerEntity.setIdUser(trainer.getIdUser());
+        trainerEntity.setIdUser(idUser);
         trainerEntity.setAge(trainer.getAge());
         trainerEntity.setGender(trainer.getGender());
         trainerEntity.setName(trainer.getName());

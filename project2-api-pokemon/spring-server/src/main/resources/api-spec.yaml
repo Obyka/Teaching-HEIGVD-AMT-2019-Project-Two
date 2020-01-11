@@ -156,7 +156,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Trainer'
+            $ref: '#/definitions/TrainerPut'
       responses:
         '201':
           description: created
@@ -334,11 +334,6 @@ definitions:
   Trainer:
     allOf:
       - type: object
-        required:
-          - idUser
-        properties:
-          idUser:
-            type: integer
       - $ref: '#/definitions/TrainerPut'
 
   TrainerWithId:
@@ -346,10 +341,13 @@ definitions:
       - type: object
         required:
           - id
+          - idUser
         properties:
           id:
             type: integer
-      - $ref: '#/definitions/Trainer'
+          idUser:
+            type: integer
+      - $ref: '#/definitions/TrainerPut'
 
   TrainerPut:
     type: object

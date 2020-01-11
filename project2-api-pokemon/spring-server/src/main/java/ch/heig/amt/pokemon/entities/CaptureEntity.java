@@ -21,12 +21,12 @@ public class CaptureEntity {
     private Integer idUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_trainer")
+    @JoinColumn(name = "id_trainer", referencedColumnName = "trainerId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private TrainerEntity trainer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_pokemon")
+    @JoinColumn(name = "id_pokemon", referencedColumnName = "pokeDexId")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private PokemonEntity pokemon;
 

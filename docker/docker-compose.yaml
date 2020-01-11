@@ -1,5 +1,18 @@
 version: '3'
 services:
+  traefik:
+    image: "traefik:v2.0.0-rc3"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   docker-mysql:
     restart: always
     container_name: docker-mysql
@@ -8,11 +21,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
-    expose:
-      - "3306"
   pokemon-api:
-    expose:
-      - "8080"
     build: api-pokemon/
     environment:
         SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/project2-amt-pokemon
@@ -21,11 +30,10 @@ services:
     depends_on:
       - docker-mysql
     labels:
-      - "traefik.enable=true" # Enable reverse-proxy for this service
-      - "traefik.frontend.rule=Host:pokemon.test" # Domain name for the app
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`pokemon.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
   login-api:
-    expose:
-      - "8090"
     build: api-login/
     environment:
         SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/project2-amt-login
@@ -34,13 +42,6 @@ services:
     depends_on:
       - docker-mysql
     labels:
-      - "traefik.enable=true" # Enable reverse-proxy for this service
-      - "traefik.frontend.rule=Host:login.test" # Domain name for the app
-  reverse-proxy:
-    image: traefik:v2.0
-    command: --api.insecure=true --providers.docker
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`login.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"

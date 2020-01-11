@@ -8,6 +8,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.mysql.address=:3306"
     ports:
       - "80:80"
       - "8080:8080"
@@ -31,8 +32,8 @@ services:
       - docker-mysql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`pokemon.localhost`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.pokemon-api.rule=Host(`localhost`) && PathPrefix(`/api/pokemon`)"
+      - "traefik.http.services.pokemon-api.loadbalancer.server.port=8080"
   login-api:
     build: api-login/
     environment:
@@ -43,5 +44,5 @@ services:
       - docker-mysql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`login.localhost`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.login-api.rule=Host(`localhost`) && PathPrefix(`/api/login`)"
+      - "traefik.http.services.login-api.loadbalancer.server.port=8090"

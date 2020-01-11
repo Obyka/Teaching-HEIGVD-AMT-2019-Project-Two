@@ -4,7 +4,7 @@ info:
   title: Users for Pokemon API
   description: An API to manage users for Pokemon API
 host: localhost:8090
-basePath: /api
+basePath: /api/login
 schemes:
   - http
 paths:

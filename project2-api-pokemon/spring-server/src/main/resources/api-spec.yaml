@@ -4,7 +4,7 @@ info:
   title: API Pokemon
   description: An API to manage Pokemon
 host: localhost:8080
-basePath: /api
+basePath: /api/pokemon
 schemes:
   - http
 paths:

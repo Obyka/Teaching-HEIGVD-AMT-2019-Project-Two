@@ -5,6 +5,7 @@ import ch.heig.amt.pokemon.api.TrainersApi;
 import ch.heig.amt.pokemon.api.exceptions.TrainerNotFoundException;
 import ch.heig.amt.pokemon.api.model.Pokemon;
 import ch.heig.amt.pokemon.api.model.Trainer;
+import ch.heig.amt.pokemon.api.model.TrainerPut;
 import ch.heig.amt.pokemon.api.model.TrainerWithId;
 import ch.heig.amt.pokemon.entities.PokemonEntity;
 import ch.heig.amt.pokemon.entities.TrainerEntity;
@@ -44,11 +45,10 @@ public class TrainersApiControllers implements TrainersApi {
     @Autowired
     private HttpServletRequest request;
 
-    public ResponseEntity<TrainerWithId> createTrainer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {
-        TrainerEntity trainerEntity = toTrainerEntity(trainer);
+    public ResponseEntity<TrainerWithId> createTrainer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody TrainerPut trainer) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        trainerEntity.setIdUser(idUser);
+        TrainerEntity trainerEntity = toTrainerEntity(trainer, idUser);
 
         UserEntity userEntity = new UserEntity();
         userEntity.setId(idUser);
@@ -114,7 +114,7 @@ public class TrainersApiControllers implements TrainersApi {
         return ResponseEntity.ok(pageResult.getContent());
     }
 
-    public ResponseEntity<Void> updateTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody Trainer trainer) {
+    public ResponseEntity<Void> updateTrainerById(@ApiParam(value = "The trainer ID",required=true) @PathVariable("id") Integer id,@ApiParam(value = "" ,required=true )  @Valid @RequestBody TrainerPut trainer) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
         Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(id, idUser);
@@ -123,16 +123,17 @@ public class TrainersApiControllers implements TrainersApi {
             throw new TrainerNotFoundException("Trainer not found");
         }
 
-        TrainerWithId updatedTrainer = addID(id,trainer);
+        TrainerWithId updatedTrainer = addID(id, trainer, idUser);
         trainerRepository.save(toTrainerEntity(updatedTrainer));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private TrainerWithId addID(int id, Trainer trainer){
+    private TrainerWithId addID(int id, TrainerPut trainer, int idUser){
         TrainerWithId trainerWithId = new TrainerWithId();
+
         trainerWithId.setId(id);
-        trainerWithId.setIdUser(trainer.getIdUser());
+        trainerWithId.setIdUser(idUser);
         trainerWithId.setSurname(trainer.getSurname());
         trainerWithId.setName(trainer.getName());
         trainerWithId.setNumberOfBadges(trainer.getNumberOfBadges());
@@ -150,16 +151,16 @@ public class TrainersApiControllers implements TrainersApi {
         trainerWithId.setAge(trainerEntity.getAge());
         trainerWithId.setGender(trainerEntity.getGender());
         trainerWithId.setName(trainerEntity.getName());
-        trainerWithId.setNumberOfBadges(trainerEntity.getNumberOfBadges());
         trainerWithId.setSurname(trainerEntity.getSurname());
+        trainerWithId.setNumberOfBadges(trainerEntity.getNumberOfBadges());
 
         return trainerWithId;
     }
 
-    private TrainerEntity toTrainerEntity(Trainer trainer) {
+    private TrainerEntity toTrainerEntity(TrainerPut trainer, Integer idUser) {
         TrainerEntity trainerEntity = new TrainerEntity();
 
-        trainerEntity.setIdUser(trainer.getIdUser());
+        trainerEntity.setIdUser(idUser);
         trainerEntity.setAge(trainer.getAge());
         trainerEntity.setGender(trainer.getGender());
         trainerEntity.setName(trainer.getName());

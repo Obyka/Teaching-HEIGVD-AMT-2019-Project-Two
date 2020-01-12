@@ -17,3 +17,8 @@ Feature: CRUD operations for login API
     Given Credentials
     When I POST with Credentials to /login
     Then I received a 201 code status with ValidCreds payload
+
+  Scenario: change password
+    Given authorization and QueryChangePassword
+    When I PUT with a new password to /password
+    Then I received a 201 code status with UserToGet payload

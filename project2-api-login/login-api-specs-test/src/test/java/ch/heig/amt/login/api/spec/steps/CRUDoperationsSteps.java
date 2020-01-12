@@ -4,6 +4,7 @@ import ch.heig.amt.login.ApiException;
 import ch.heig.amt.login.ApiResponse;
 import ch.heig.amt.login.api.DefaultApi;
 import ch.heig.amt.login.api.dto.Credentials;
+import ch.heig.amt.login.api.dto.QueryPasswordChange;
 import ch.heig.amt.login.api.dto.UserToGet;
 import ch.heig.amt.login.api.dto.UserToPost;
 import ch.heig.amt.login.api.spec.helpers.Environment;
@@ -28,6 +29,7 @@ public class CRUDoperationsSteps {
     UserToGet userToGet;
     UserToPost userToPost;
     String authorization;
+    QueryPasswordChange queryPasswordChange;
 
     public CRUDoperationsSteps(Environment environment) {
         this.environment = environment;
@@ -115,4 +117,24 @@ public class CRUDoperationsSteps {
         assertEquals(201, arg1);
     }
 
+    @Given("^authorization and QueryChangePassword$")
+    public void authorization_and_QueryChangePassword() throws Throwable {
+        queryPasswordChange = new QueryPasswordChange();
+        authorization = "eyJhbGciOiJIUzI1NiJ9.eyJpZHVzZXIiOjEsImlzYWRtaW4iOnRydWUsImlhdCI6MTU3ODg1MjE5Nywic3ViIjoiYWRtaW4iLCJleHAiOjE2MTA0MDkxNDl9.2HSzLOtypaL76Cd4mzFYAlzglaXM3HwPxAHcFPYID6E";
+    }
+
+    @When("^I PUT with a new password to /password$")
+    public void i_PUT_with_a_new_password_to_password() throws Throwable {
+        try {
+            lastApiResponse = api.changePasswordWithHttpInfo(authorization, queryPasswordChange);
+            lastApiException = null;
+            lastApiCallThrewException = false;
+            lastStatusCode = lastApiResponse.getStatusCode();
+        } catch (ApiException e) {
+            lastApiResponse = null;
+            lastApiCallThrewException = true;
+            lastApiException = e;
+            lastStatusCode = lastApiException.getCode();
+        }
+    }
 }

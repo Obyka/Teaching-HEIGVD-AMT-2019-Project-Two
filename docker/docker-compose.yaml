@@ -1,0 +1,48 @@
+version: '3'
+services:
+  traefik:
+    image: "traefik:v2.0.0-rc3"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.mysql.address=:3306"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  docker-mysql:
+    restart: always
+    container_name: docker-mysql
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+  pokemon-api:
+    build: api-pokemon/
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/project2-amt-pokemon
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: root 
+    depends_on:
+      - docker-mysql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pokemon-api.rule=Host(`localhost`) && PathPrefix(`/api/pokemon`)"
+      - "traefik.http.services.pokemon-api.loadbalancer.server.port=8080"
+  login-api:
+    build: api-login/
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/project2-amt-login
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: root  
+    depends_on:
+      - docker-mysql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.login-api.rule=Host(`localhost`) && PathPrefix(`/api/login`)"
+      - "traefik.http.services.login-api.loadbalancer.server.port=8090"

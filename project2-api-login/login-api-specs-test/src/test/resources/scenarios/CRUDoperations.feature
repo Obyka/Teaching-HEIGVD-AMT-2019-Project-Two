@@ -12,3 +12,8 @@ Feature: CRUD operations for login API
     Given authorization string
     When I GET with authorization string
     Then I received a 201 code status with UserToGet payload
+
+  Scenario: log in the server
+    Given Credentials
+    When I POST with Credentials to /login
+    Then I received a 201 code status with ValidCreds payload

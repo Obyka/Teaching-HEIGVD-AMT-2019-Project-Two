@@ -45,7 +45,6 @@ public class CRUDoperationsSteps {
 
     @Given("^UserToPost payload$")
     public void usertopost_payload() throws Throwable {
-        credentials = new Credentials();
         userToGet = new UserToGet();
         userToPost = new UserToPost();
     }
@@ -58,7 +57,7 @@ public class CRUDoperationsSteps {
             lastApiException = null;
             lastStatusCode = lastApiResponse.getStatusCode();
         } catch (ApiException e) {
-            lastApiCallThrewException = false;
+            lastApiCallThrewException = true;
             lastApiResponse = null;
             lastApiException = e;
             lastStatusCode = lastApiException.getCode();
@@ -78,7 +77,7 @@ public class CRUDoperationsSteps {
             lastApiException = null;
             lastStatusCode = lastApiResponse.getStatusCode();
         } catch (ApiException e) {
-            userToGet = null;
+            lastApiCallThrewException = true;
             lastApiResponse = null;
             lastApiException = e;
             lastStatusCode = lastApiException.getCode();
@@ -90,4 +89,30 @@ public class CRUDoperationsSteps {
     public void i_received_a_code_status_with_UserToGet_payload(int arg1) throws Throwable {
         assertEquals(201, arg1);
     }
+
+    @Given("^Credentials$")
+    public void credentials() throws Throwable {
+        credentials = new Credentials();
+    }
+
+    @When("^I POST with Credentials to /login$")
+    public void i_POST_with_Credentials_to_login() throws Throwable {
+        try {
+            lastApiResponse = api.loginWithHttpInfo(credentials);
+            lastApiException = null;
+            lastApiCallThrewException = false;
+            lastStatusCode = lastApiResponse.getStatusCode();
+        } catch (ApiException e) {
+            lastApiResponse = null;
+            lastApiCallThrewException = true;
+            lastApiException = e;
+            lastStatusCode = lastApiException.getCode();
+        }
+    }
+
+    @Then("^I received a (\\d+) code status with ValidCreds payload$")
+    public void i_received_a_code_status_with_ValidCreds_payload(int arg1) throws Throwable {
+        assertEquals(201, arg1);
+    }
+
 }

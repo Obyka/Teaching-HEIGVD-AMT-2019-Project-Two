@@ -14,6 +14,8 @@ paths:
       operationId: login
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - name: credentials
           in: body
@@ -21,7 +23,7 @@ paths:
           schema:
             $ref: '#/definitions/Credentials'
       responses:
-        '201':
+        '200':
           description: logged successfully
           schema:
             $ref: '#/definitions/ValidCreds'

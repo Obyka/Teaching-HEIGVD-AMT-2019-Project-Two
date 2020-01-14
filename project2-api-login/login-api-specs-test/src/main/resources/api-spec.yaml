@@ -43,7 +43,7 @@ paths:
           type: string
           required: true
       responses:
-        '201':
+        '200':
           description: retrieved account info
           schema:
             $ref: '#/definitions/UserToGet'
@@ -77,6 +77,8 @@ paths:
       description: change password for its own account
       operationId: changePassword
       consumes:
+        - application/json
+      produces:
         - application/json
       parameters:
         - in: header

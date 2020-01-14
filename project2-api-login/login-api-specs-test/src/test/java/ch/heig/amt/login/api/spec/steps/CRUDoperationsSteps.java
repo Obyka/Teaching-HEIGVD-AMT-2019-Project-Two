@@ -3,10 +3,7 @@ package ch.heig.amt.login.api.spec.steps;
 import ch.heig.amt.login.ApiException;
 import ch.heig.amt.login.ApiResponse;
 import ch.heig.amt.login.api.DefaultApi;
-import ch.heig.amt.login.api.dto.Credentials;
-import ch.heig.amt.login.api.dto.UserToGet;
-import ch.heig.amt.login.api.dto.UserToPost;
-import ch.heig.amt.login.api.dto.ValidCreds;
+import ch.heig.amt.login.api.dto.*;
 import ch.heig.amt.login.api.spec.helpers.Environment;
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
@@ -25,6 +22,7 @@ public class CRUDoperationsSteps {
     private String authorizationToken;
     private UserToPost userToPost;
     private UserToGet userToGet;
+    private QueryPasswordChange queryPasswordChange;
 
 
     public CRUDoperationsSteps(Environment environment) throws IOException {
@@ -35,6 +33,8 @@ public class CRUDoperationsSteps {
 
         userToPost = new UserToPost();
         userToGet = new UserToGet();
+
+        queryPasswordChange = new QueryPasswordChange();
     }
 
     @Given("^the credentials for administrator$")
@@ -132,29 +132,58 @@ public class CRUDoperationsSteps {
         assertNotNull(userToGet);
     }
 
-
-    @Given("^a valid token$")
-    public void a_valid_token() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Given("^credentials for normal user$")
+    public void credentials_for_normal_user() throws Throwable {
+        credentials.setUsername("james");
+        credentials.setPassword("mister1511");
     }
 
     @Given("^new password$")
     public void new_password() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        queryPasswordChange.setCurrentPassword("mister1511");
+        queryPasswordChange.setNewPassword("pass");
+    }
+
+    @When("^I try to login in the system as normal user$")
+    public void i_try_to_login_in_the_system_as_normal_user() throws Throwable {
+        try {
+            environment.setLastApiResponse(environment.getApi().loginWithHttpInfo(credentials));
+
+            validCreds = (ValidCreds) environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
     }
 
     @When("^I update my password with a new password$")
     public void i_update_my_password_with_a_new_password() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        try {
+            environment.setLastApiResponse(environment.getApi().changePasswordWithHttpInfo(validCreds.getJwTToken(), queryPasswordChange));
+
+            userToGet = (UserToGet) environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
     }
 
-    @Then("^I receive all about my information$")
-    public void i_receive_all_about_my_information() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Then("^I receive all my information and (\\d+) status code$")
+    public void i_receive_all_my_information_and_status_code(int arg1) throws Throwable {
+        assertNotNull(userToGet);
+        assertEquals(arg1, environment.getLastStatusCode());
     }
 
 }

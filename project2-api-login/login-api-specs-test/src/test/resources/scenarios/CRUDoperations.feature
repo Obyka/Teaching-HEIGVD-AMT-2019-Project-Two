@@ -15,8 +15,10 @@ Feature: CRUD operations for login API
     When I search some information about me
     Then I received all information about me and 200 status code
 
-  Scenario: change password
-    Given a valid token
+  Scenario: login as normal user and change password
+    Given credentials for normal user
     And new password
-    When I update my password with a new password
-    Then I receive all about my information
+    When I try to login in the system as normal user
+    And I update my password with a new password
+    Then the system returns me a token with my identifior and a 200 status code
+    And I receive all my information and 200 status code

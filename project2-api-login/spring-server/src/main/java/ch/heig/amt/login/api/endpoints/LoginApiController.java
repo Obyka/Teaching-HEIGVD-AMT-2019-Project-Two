@@ -43,6 +43,7 @@ public class LoginApiController implements LoginApi {
         } else{
             throw new BadLoginException("Bad login");
         }
+
         return ResponseEntity.ok(validCreds);
     }
 }

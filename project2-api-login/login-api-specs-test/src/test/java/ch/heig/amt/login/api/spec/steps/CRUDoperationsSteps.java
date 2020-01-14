@@ -4,6 +4,8 @@ import ch.heig.amt.login.ApiException;
 import ch.heig.amt.login.ApiResponse;
 import ch.heig.amt.login.api.DefaultApi;
 import ch.heig.amt.login.api.dto.Credentials;
+import ch.heig.amt.login.api.dto.UserToGet;
+import ch.heig.amt.login.api.dto.UserToPost;
 import ch.heig.amt.login.api.dto.ValidCreds;
 import ch.heig.amt.login.api.spec.helpers.Environment;
 import cucumber.api.PendingException;
@@ -17,34 +19,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CRUDoperationsSteps {
-    private Environment environment = new Environment();
-    private DefaultApi api;
-    private ApiResponse lastApiResponse;
-    private ApiException lastApiException;
-    private boolean lastApiCallThrewException;
-    private int lastStatusCode;
-
+    private Environment environment;
     private Credentials credentials;
     private ValidCreds validCreds;
+    private String authorizationToken;
+    private UserToPost userToPost;
+    private UserToGet userToGet;
+
 
     public CRUDoperationsSteps(Environment environment) throws IOException {
         this.environment = environment;
-        this.api = environment.getApi();
-        this.lastApiResponse = environment.getLastApiResponse();
-        this.lastApiException = environment.getLastApiException();
-        this.lastApiCallThrewException = environment.getLastApiCallThrewException();
-        this.lastStatusCode = environment.getLastStatusCode();
-    }
 
-    @Given("^there is a Login server$")
-    public void there_is_a_Login_server() throws Throwable {
-        assertNotNull(api);
+        credentials = new Credentials();
+        validCreds = new ValidCreds();
+
+        userToPost = new UserToPost();
+        userToGet = new UserToGet();
     }
 
     @Given("^the credentials for administrator$")
     public void the_credentials_for_administrator() throws Throwable {
-        credentials = new Credentials();
-
         credentials.setUsername("admin");
         credentials.setPassword("password");
     }
@@ -52,69 +46,92 @@ public class CRUDoperationsSteps {
     @When("^I try to login in the system$")
     public void i_try_to_login_in_the_system() throws Throwable {
         try {
-            lastApiResponse = api.loginWithHttpInfo(credentials);
+            environment.setLastApiResponse(environment.getApi().loginWithHttpInfo(credentials));
 
-            validCreds = (ValidCreds) lastApiResponse.getData();
+            validCreds = (ValidCreds) environment.getLastApiResponse().getData();
 
-            lastApiException = null;
-            lastApiCallThrewException = false;
-            lastStatusCode = lastApiResponse.getStatusCode();
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
         } catch (ApiException e) {
-            lastApiResponse = null;
-            lastApiCallThrewException = true;
-            lastApiException = e;
-            lastStatusCode = lastApiException.getCode();
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
         }
     }
 
     @Then("^the system returns me a token with my identifior and a (\\d+) status code$")
     public void the_system_returns_me_a_token_with_my_identifior_and_a_status_code(int arg1) throws Throwable {
-        assertEquals(arg1, lastStatusCode);
+        assertEquals(arg1, environment.getLastStatusCode());
         assertNotNull(validCreds);
     }
 
+    @Given("^a new user to add and a valid administrator token$")
+    public void a_new_user_to_add_and_a_valid_administrator_token() throws Throwable {
+        authorizationToken = validCreds.getJwTToken();
 
-    @Given("^a new user to add$")
-    public void a_new_user_to_add() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
-    @Given("^a valid administrator token$")
-    public void a_valid_administrator_token() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        userToPost.setUsername("james");
+        userToPost.setPassword("mister1511");
+        userToPost.setMail("james.bond@mi6.com");
+        userToPost.setIsadmin(false);
+        userToPost.setLastname("Bond");
+        userToPost.setFirstname("James");
     }
 
     @When("^I insert a this new user in the database$")
     public void i_insert_a_this_new_user_in_the_database() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        try {
+            environment.setLastApiResponse(environment.getApi().createAccountWithHttpInfo(authorizationToken, userToPost));
+
+            userToGet = (UserToGet) environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
     }
 
-    @Then("^I received with the new user who have just insered$")
-    public void i_received_with_the_new_user_who_have_just_insered() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Then("^I received with the new user who have just insered and a (\\d+) status code$")
+    public void i_received_with_the_new_user_who_have_just_insered_and_a_status_code(int arg1) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
+        assertNotNull(userToGet);
     }
 
     @Given("^valid token$")
     public void valid_token() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        authorizationToken = validCreds.getJwTToken();
     }
 
     @When("^I search some information about me$")
     public void i_search_some_information_about_me() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        try {
+            environment.setLastApiResponse(environment.getApi().getUserWithHttpInfo(authorizationToken));
+
+            userToGet = (UserToGet) environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
     }
 
-    @Then("^I received all information about me$")
-    public void i_received_all_information_about_me() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    @Then("^I received all information about me and (\\d+) status code$")
+    public void i_received_all_information_about_me_and_status_code(int arg1) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
+        assertNotNull(userToGet);
     }
+
 
     @Given("^a valid token$")
     public void a_valid_token() throws Throwable {

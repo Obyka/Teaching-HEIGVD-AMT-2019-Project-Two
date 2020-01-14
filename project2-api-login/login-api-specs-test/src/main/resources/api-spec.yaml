@@ -35,6 +35,8 @@ paths:
       operationId: getUser
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - in: header
           name: Authorization
@@ -49,6 +51,8 @@ paths:
       description: create an account
       operationId: createAccount
       consumes:
+        - application/json
+      produces:
         - application/json
       parameters:
         - in: header

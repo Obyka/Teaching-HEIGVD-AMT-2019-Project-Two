@@ -36,5 +36,13 @@ public class Environment {
 
     public int getLastStatusCode() { return lastStatusCode; }
 
+    public void setDefaultApi(DefaultApi api) { this.api = api; }
 
+    public void setLastApiResponse(ApiResponse apiResponse) { this.lastApiResponse = apiResponse; }
+
+    public void setLastApiException(ApiException apiException){ this.lastApiException = apiException; }
+
+    public void setLastApiCallThrewException(boolean apiCallThrewException){ this.lastApiCallThrewException = apiCallThrewException; }
+
+    public void setLastStatusCode(int statusCode){ this.lastStatusCode = statusCode; }
 }

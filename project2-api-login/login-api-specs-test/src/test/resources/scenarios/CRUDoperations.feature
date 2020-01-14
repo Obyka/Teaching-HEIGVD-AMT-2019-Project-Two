@@ -20,5 +20,4 @@ Feature: CRUD operations for login API
     And new password
     When I try to login in the system as normal user
     And I update my password with a new password
-    Then the system returns me a token with my identifior and a 200 status code
-    And I receive all my information and 200 status code
+    Then I receive all my information and 200 status code

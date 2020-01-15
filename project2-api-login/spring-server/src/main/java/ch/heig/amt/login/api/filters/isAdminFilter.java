@@ -4,8 +4,10 @@ import ch.heig.amt.login.api.exceptions.ForbiddenException;
 import ch.heig.amt.login.api.util.UtilsJWT;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.jsonwebtoken.Claims;
+import org.springframework.http.HttpStatus;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,7 +33,8 @@ public class isAdminFilter implements Filter {
             validToken = false;
         }
         if((!validToken || !(boolean)claims.get("isadmin")) && request.getMethod().equals("POST")){
-            throw new ForbiddenException("Invalid auth token");
+            response.sendError(HttpStatus.FORBIDDEN.value(), "Invalid auth token");
+            return;
         }
 
         //call next filter in the filter chain

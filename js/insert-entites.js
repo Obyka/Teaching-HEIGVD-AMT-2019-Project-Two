@@ -14,6 +14,12 @@ con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
   
+  var sql = "DELETE FROM capture_entity";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Number of records deleted: " + result.affectedRows);
+  });
+  
   var sql = "DELETE FROM pokemon_entity";
   con.query(sql, function (err, result) {
     if (err) throw err;
@@ -26,15 +32,11 @@ con.connect(function(err) {
     console.log("Number of records deleted: " + result.affectedRows);
   });
   
-  var sql = "DELETE FROM capture_entity";
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-    console.log("Number of records deleted: " + result.affectedRows);
-  });
+  
   
   var sql = "INSERT INTO pokemon_entity(poke_dex_id, category, height, hp, id_user, name, type) VALUES ?";
   var values = [];
-  for(var i = 0; i < 1000; ++i){
+  for(var i = 0; i < 1000000; ++i){
         values.push([i+1, 'category', '150', 12, 1, "Pokemon name", "Pokemon type"]);
   }
   con.query(sql, [values], function (err, result) {
@@ -52,7 +54,7 @@ con.connect(function(err) {
     console.log("Number of records inserted: " + result.affectedRows);
   });
   
-  var sql = "INSERT INTO capture_entity(id, date_capture, id_user, id_pokemon, id_trainer) VALUES ?";
+  /*var sql = "INSERT INTO capture_entity(id, date_capture, id_user, id_pokemon, id_trainer) VALUES ?";
   var values = [];
   for(var i = 1; i <= 1000; ++i){
       for(var j = 1; j <= 1000; ++j){
@@ -62,5 +64,5 @@ con.connect(function(err) {
   con.query(sql, [values], function (err, result) {
     if (err) throw err;
     console.log("Number of records inserted: " + result.affectedRows);
-  });
+  }); */
 });

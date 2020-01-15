@@ -26,15 +26,14 @@ public class Environment {
 
     // PicoContainer : http://www.thinkcode.se/blog/2017/04/01/sharing-state-between-steps-in-cucumberjvm-using-picocontainer
     // And : https://medium.com/@Raghwendra.sonu/sharing-state-between-steps-in-cucumber-java-using-picocontainer-ad39d4c0309c
-    public Credentials credentials;
-    public ValidCreds validCreds;
-
-    private String authorizationToken;
-    public UserToGet userToGet;
-    public UserToPost userToPost;
-    public QueryPasswordChange queryPasswordChange;
+    private Credentials credentials = new Credentials();
+    private ValidCreds validCreds = new ValidCreds();
 
     private String lastMilliSeconds;
+    private String authorizationToken;
+    private UserToGet userToGet = new UserToGet();
+    private UserToPost userToPost = new UserToPost();
+    private QueryPasswordChange queryPasswordChange = new QueryPasswordChange();
 
     public Environment() throws IOException {
         Properties properties = new Properties();

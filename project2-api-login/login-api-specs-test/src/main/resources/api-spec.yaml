@@ -47,6 +47,8 @@ paths:
           description: retrieved account info
           schema:
             $ref: '#/definitions/UserToGet'
+        '401':
+          description: access denied
     post:
       description: create an account
       operationId: createAccount
@@ -95,6 +97,8 @@ paths:
           description: account created
           schema:
             $ref: '#/definitions/UserToGet'
+        '401':
+          description: bad login
 definitions:
   BaseUser:
     type: object

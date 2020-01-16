@@ -24,3 +24,8 @@ Feature: CRUD for Trainers
     Then I receive a valid token
     When I get information about this trainer
     Then The system returns me an error with 404 status code
+    
+  Scenario: get a trainer that does not exist
+    Given random trainer ID
+    When I get information about this trainer
+    Then The system returns me an error with 404 status code

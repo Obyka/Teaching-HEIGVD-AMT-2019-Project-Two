@@ -76,4 +76,10 @@ public class TrainersScenariosSteps {
         assertNotNull(environment.getTrainerWithId());
         assertEquals(arg1, environment.getLastStatusCode());
     }
+
+    @Given("^random trainer ID$")
+    public void random_trainer_ID() throws Throwable {
+        environment.getTrainerWithId().setId(0);
+    }
+
 }

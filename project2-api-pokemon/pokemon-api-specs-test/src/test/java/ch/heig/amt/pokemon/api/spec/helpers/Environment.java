@@ -9,6 +9,11 @@ import ch.heig.amt.pokemon.api.dto.TrainerPut;
 import ch.heig.amt.pokemon.api.dto.TrainerWithId;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -36,6 +41,19 @@ public class Environment {
 
     private String lastMilliseconds;
     private int lastMillisecondsInt;
+
+    private Integer pokemonId;
+    private String payloadJson;
+    private String loginUrl;
+    private HttpHeaders httpHeaders;
+    private HttpEntity<String> entity;
+    private RestTemplate restTemplate;
+    private ResponseEntity<String> response;
+
+    private JSONObject jsonObject;
+
+    private String responsePostLogin;
+    private String adminToken;
 
     public Environment() throws IOException {
         Properties properties = new Properties();

@@ -30,7 +30,7 @@ public class TrainersScenariosSteps {
         environment.getTrainerPut().setAge(23);
         environment.getTrainerPut().setNumberOfBadges(10);
 
-        environment.getApi().getApiClient().addDefaultHeader("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJpZHVzZXIiOjEsImlzYWRtaW4iOnRydWUsImlhdCI6MTU3ODIzODM4Miwic3ViIjoiYWRtaW4iLCJleHAiOjE2MDk3OTUzMzR9.y98yisjtq6BDIOuJsiqP8d-RYPDg3sgbYYqIstfFuuw");
+        environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
     }
 
     @When("^I add a new trainer$")

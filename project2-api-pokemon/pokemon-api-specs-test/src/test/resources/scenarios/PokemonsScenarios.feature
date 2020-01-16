@@ -1,5 +1,10 @@
 Feature: CRUD for Pokemons
 
+  Background: login as an administrator
+    Given payload JSON and HTTP data and header
+    When I make a POST request to /api/login/login
+    Then I receive a valid token
+
   Scenario: create a pokemon and check if it is created
     Given a new pokemon to create
     When I add a new pokemon

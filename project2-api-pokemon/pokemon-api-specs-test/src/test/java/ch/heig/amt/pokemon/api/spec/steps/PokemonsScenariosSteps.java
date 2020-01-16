@@ -18,6 +18,9 @@ import static org.junit.Assert.assertNotNull;
 
 public class PokemonsScenariosSteps {
     private Environment environment;
+    private String lastMilliseconds;
+
+    private String usernameNewUser;
 
     public PokemonsScenariosSteps(Environment environment) {
         this.environment = environment;
@@ -110,6 +113,72 @@ public class PokemonsScenariosSteps {
             environment.setLastApiException(e);
             environment.setLastStatusCode(environment.getLastApiException().getCode());
         }
+    }
+
+    @Given("^information for new user and other parameters$")
+    public void information_for_new_user_and_other_parameters() throws Throwable {
+        lastMilliseconds = "" + System.currentTimeMillis();
+
+        environment.setPayloadJson("{\"password\":\"password\"," +
+                "\"username\":\"user"+lastMilliseconds+"\"," +
+                "\"mail\":\""+lastMilliseconds+"@amt.com\"," +
+                "\"firstname\":\"User"+lastMilliseconds+"\"," +
+                "\"lastname\":\""+lastMilliseconds+"\"," +
+                "\"isadmin\": false}");
+
+        environment.setLoginUrl("http://localhost:8090/api/login/users");
+
+        environment.setHttpHeaders(new HttpHeaders());
+        environment.getHttpHeaders().add("Content-Type", "application/json");
+        environment.getHttpHeaders().add("Accept", "application/json");
+        environment.getHttpHeaders().add("Authorization", environment.getAdminToken());
+
+        environment.setEntity(new HttpEntity<String>(environment.getPayloadJson(), environment.getHttpHeaders()));
+    }
+
+    @When("^I insert this new user$")
+    public void i_insert_this_new_user() throws Throwable {
+        environment.setRestTemplate(new RestTemplate());
+        environment.setResponse(environment.getRestTemplate().postForEntity(environment.getLoginUrl(), environment.getEntity(), String.class));
+    }
+
+    @Then("^The user has been created$")
+    public void the_user_has_been_created() throws Throwable {
+        environment.setResponsePostLogin(environment.getResponse().getBody().toString());
+
+        environment.setJsonObject(new JSONObject(environment.getResponsePostLogin()));
+        usernameNewUser = (String)environment.getJsonObject().get("username");
+    }
+
+    @Given("^credentials for new user$")
+    public void credentials_for_new_user() throws Throwable {
+        environment.setPayloadJson("{\"username\":\""+usernameNewUser+"\",\"password\":\"password\"}");
+        environment.setLoginUrl("http://localhost:8090/api/login/login");
+    }
+
+    @When("^I try to get the pokemon with this new user$")
+    public void i_try_to_get_the_pokemon_with_this_new_user() throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().getPokemonByIDWithHttpInfo(environment.getPokemon().getPokedexId()));
+
+            environment.setPokemon((Pokemon) environment.getLastApiResponse().getData());
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
+
+    @Then("^The system returns me an error with (\\d+) status code$")
+    public void the_system_returns_me_an_error_with_status_code(int arg1) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
     }
 
 }

@@ -4,7 +4,7 @@ info:
   title: API Pokemon
   description: An API to manage Pokemon
 host: localhost:8080
-basePath: /api
+basePath: /api/pokemon
 schemes:
   - http
 paths:
@@ -15,26 +15,16 @@ paths:
       produces:
         - application/json
       parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the pokemon to return
-        - in: query
-          name: type
-          type: string
-          description: type of the pokemon to return
-        - in: query
-          name: category
-          type: string
-          description: category of the pokemon to return
-        - in: query
-          name: height
+        - name: page
+          default: 0
+          in: query
           type: integer
-          description: height of the pokemon to return
-        - in: query
-          name: hp
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
           type: integer
-          description: hp of the pokemon to return
+          description: The size of a page
       responses:
         '200':
           description: success
@@ -46,27 +36,6 @@ paths:
     delete:
       operationId: deletePokemons
       description: delete the list of all pokemons
-      parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the pokemon to delete
-        - in: query
-          name: type
-          type: string
-          description: type of the pokemon to delete
-        - in: query
-          name: category
-          type: string
-          description: category of the pokemon to delete
-        - in: query
-          name: height
-          type: integer
-          description: height of the pokemon to delete
-        - in: query
-          name: hp
-          type: integer
-          description: hp of the pokemon to delete
       responses:
         204:
           description: sucessfully deleted
@@ -76,12 +45,14 @@ paths:
       operationId: createPokemon
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - name: pokemon
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Pokemon'
+            $ref: '#/definitions/PokemonPut'
       responses:
         '201':
           description: created
@@ -138,7 +109,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Pokemon'
+            $ref: '#/definitions/PokemonPut'
       responses:
         200:
           description: success
@@ -152,26 +123,16 @@ paths:
       produces:
         - application/json
       parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the trainer to return
-        - in: query
-          name: surname
-          type: string
-          description: surname of the trainer to return
-        - in: query
-          name: gender
-          type: string
-          description: gender of the trainer to return
-        - in: query
-          name: age
+        - name: page
+          default: 0
+          in: query
           type: integer
-          description: age of the trainer to return
-        - in: query
-          name: numberOfBadges
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
           type: integer
-          description: number of badges of the trainer to return
+          description: The size of a page
       responses:
         '200':
           description: success
@@ -183,27 +144,6 @@ paths:
     delete:
       operationId: deleteTrainers
       description: delete the list of all trainers
-      parameters:
-        - in: query
-          name: name
-          type: string
-          description: name of the trainer to delete
-        - in: query
-          name: surname
-          type: string
-          description: surname of the trainer to delete
-        - in: query
-          name: gender
-          type: string
-          description: gender of the trainer to delete
-        - in: query
-          name: age
-          type: integer
-          description: age of the trainer to delete
-        - in: query
-          name: numberOfBadges
-          type: integer
-          description: number of badges of the trainer to delete
       responses:
         204:
           description: sucessfully deleted
@@ -218,7 +158,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Trainer'
+            $ref: '#/definitions/TrainerPut'
       responses:
         '201':
           description: created
@@ -275,7 +215,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Trainer'
+            $ref: '#/definitions/TrainerPut'
       responses:
         200:
           description: success
@@ -293,12 +233,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Capture'
+            $ref: '#/definitions/CapturePost'
       responses:
         '201':
           description: created
           schema:
-            $ref: '#/definitions/CaptureWithId'
+            $ref: '#/definitions/CaptureGet'
         '400':
           description: Bad request
 
@@ -312,7 +252,9 @@ paths:
         '200':
           description: success
           schema:
-            $ref: '#/definitions/CaptureGetAll'
+            type: array
+            items:
+              $ref: '#/definitions/CaptureGet'
         '404':
           description: Not found
       parameters:
@@ -321,6 +263,16 @@ paths:
           required: true
           type: integer
           description: trainer ID
+        - name: page
+          default: 0
+          in: query
+          type: integer
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
+          type: integer
+          description: The size of a page
 
   /captures/pokemons/{id_pokemon}:
     get:
@@ -332,7 +284,9 @@ paths:
         '200':
           description: success
           schema:
-            $ref: '#/definitions/CaptureGetAll'
+            type: array
+            items:
+              $ref: '#/definitions/CaptureGet'
         '404':
           description: Not found
       parameters:
@@ -341,9 +295,29 @@ paths:
           required: true
           type: integer
           description: pokemon ID
+        - name: page
+          default: 0
+          in: query
+          type: integer
+          description: The page number to get
+        - name: size
+          default: 20
+          in: query
+          type: integer
+          description: The size of a page
 
 definitions:
   Pokemon:
+    allOf:
+      - type: object
+        required:
+          - idUser
+        properties:
+          idUser:
+            type: integer
+      - $ref: '#/definitions/PokemonPut'
+
+  PokemonPut:
     type: object
     properties:
       pokedexId:
@@ -360,6 +334,24 @@ definitions:
         type: integer
 
   Trainer:
+    allOf:
+      - type: object
+      - $ref: '#/definitions/TrainerPut'
+
+  TrainerWithId:
+    allOf:
+      - type: object
+        required:
+          - id
+          - idUser
+        properties:
+          id:
+            type: integer
+          idUser:
+            type: integer
+      - $ref: '#/definitions/TrainerPut'
+
+  TrainerPut:
     type: object
     properties:
       name:
@@ -373,58 +365,26 @@ definitions:
       numberOfBadges:
         type: integer
 
-  TrainerWithId:
+  CapturePost:
+    type: object
+    properties:
+      idPokemon:
+        type: integer
+      idTrainer:
+        type: integer
+      dateCapture:
+        type: string
+        pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$'
+
+  CaptureGet:
     allOf:
       - type: object
         required:
-          - id
+          - idUser
+          - idCapture
         properties:
-          id:
+          idUser:
             type: integer
-      - $ref: '#/definitions/Trainer'
-
-  Capture:
-    type: object
-    properties:
-      idTrainer:
-        type: integer
-      pokemons:
-        type: array
-        items:
-          $ref: '#/definitions/CapturePokemon'
-
-  CaptureWithId:
-    allOf:
-      - type: object
-        properties:
-          id:
+          idCapture:
             type: integer
-      - $ref: '#/definitions/Capture'
-
-  CapturePokemon:
-    type: object
-    properties:
-      idPokemon:
-        type: integer
-      dateCapture:
-        type: string
-
-  CaptureGet:
-    type: object
-    properties:
-      idCapture:
-        type: integer
-      idPokemon:
-        type: integer
-      idTrainer:
-        type: integer
-      dateCapture:
-        type: string
-
-  CaptureGetAll:
-    type: object
-    properties:
-      captures:
-        type: array
-        items:
-          $ref: '#/definitions/CaptureGet'
+      - $ref: '#/definitions/CapturePost'

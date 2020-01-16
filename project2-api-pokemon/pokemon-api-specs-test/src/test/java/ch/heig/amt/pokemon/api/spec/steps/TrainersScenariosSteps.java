@@ -54,6 +54,8 @@ public class TrainersScenariosSteps {
     @When("^I get information about this trainer$")
     public void i_get_information_about_this_trainer() throws Throwable {
         try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
             environment.setLastApiResponse(environment.getApi().getTrainerByIdWithHttpInfo(environment.getTrainerWithId().getId()));
 
             environment.setTrainerWithId((TrainerWithId) environment.getLastApiResponse().getData());

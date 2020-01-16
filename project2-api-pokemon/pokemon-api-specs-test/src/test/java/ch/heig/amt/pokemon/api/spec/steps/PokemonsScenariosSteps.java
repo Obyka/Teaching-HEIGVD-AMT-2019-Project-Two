@@ -215,5 +215,55 @@ public class PokemonsScenariosSteps {
         assertEquals(20, pokemons.size());
     }
 
+    @When("^I delete this pokemon$")
+    public void i_delete_this_pokemon() throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().deletePokemonByIDWithHttpInfo(environment.getPokemon().getPokedexId()));
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
+
+    @Then("^the system returns the (\\d+) status$")
+    public void the_system_returns_the_status(int arg1) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
+    }
+
+    @Given("^modification on Pokemon$")
+    public void modification_on_Pokemon() throws Throwable {
+        environment.getPokemonPut().setPokedexId(environment.getPokemon().getPokedexId());
+        environment.getPokemonPut().setName(environment.getPokemon().getName());
+        environment.getPokemonPut().setCategory("Fire");
+        environment.getPokemonPut().setType(environment.getPokemon().getType());
+        environment.getPokemonPut().setHeight(environment.getPokemon().getHeight());
+        environment.getPokemonPut().setHp(environment.getPokemon().getHp());
+    }
+
+    @When("^I update a pokemon$")
+    public void i_update_a_pokemon() throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().updatePokemonByIDWithHttpInfo(environment.getPokemon().getPokedexId(), environment.getPokemonPut()));
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
 
 }

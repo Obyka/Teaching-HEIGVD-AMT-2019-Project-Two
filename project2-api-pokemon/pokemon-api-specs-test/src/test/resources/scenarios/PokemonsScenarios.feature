@@ -34,3 +34,18 @@ Feature: CRUD for Pokemons
   Scenario: get all pokemons belong to administrator
     When I get all pokemons
     Then I receive all my pokemons belong to me and 200 status code
+    
+  Scenario: create and delete a pokemon
+    Given a new pokemon to create
+    When I add a new pokemon
+    Then the system returns the added pokemon with 201 status
+    When I delete this pokemon
+    Then the system returns the 204 status
+
+  Scenario: create and update a pokemon
+    Given a new pokemon to create
+    When I add a new pokemon
+    Then the system returns the added pokemon with 201 status
+    Given modification on Pokemon
+    When I update a pokemon
+    Then the system returns the 200 status

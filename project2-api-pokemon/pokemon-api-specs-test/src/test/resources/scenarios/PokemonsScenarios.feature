@@ -30,3 +30,7 @@ Feature: CRUD for Pokemons
     Given random pokeDexId
     When I get information about this pokemon
     Then The system returns me an error with 404 status code
+
+  Scenario: get all pokemons belong to administrator
+    When I get all pokemons
+    Then I receive all my pokemons belong to me and 200 status code

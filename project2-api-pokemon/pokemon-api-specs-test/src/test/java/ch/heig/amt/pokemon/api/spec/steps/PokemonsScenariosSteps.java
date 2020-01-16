@@ -13,6 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -21,6 +23,7 @@ public class PokemonsScenariosSteps {
     private String lastMilliseconds;
 
     private String usernameNewUser;
+    private ArrayList<Pokemon> pokemons;
 
     public PokemonsScenariosSteps(Environment environment) {
         this.environment = environment;
@@ -185,5 +188,32 @@ public class PokemonsScenariosSteps {
     public void random_pokeDexId() throws Throwable {
         environment.setPokemonId(0);
     }
+
+    @When("^I get all pokemons$")
+    public void i_get_all_pokemons() throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().getPokemonsWithHttpInfo(0, 20));
+
+            pokemons = (ArrayList<Pokemon>)environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
+
+    @Then("^I receive all my pokemons belong to me and (\\d+) status code$")
+    public void i_receive_all_my_pokemons_belong_to_me_and_status_code(int arg1) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
+        assertEquals(20, pokemons.size());
+    }
+
 
 }

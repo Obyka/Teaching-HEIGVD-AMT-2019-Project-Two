@@ -181,4 +181,9 @@ public class PokemonsScenariosSteps {
         assertEquals(arg1, environment.getLastStatusCode());
     }
 
+    @Given("^random pokeDexId$")
+    public void random_pokeDexId() throws Throwable {
+        environment.setPokemonId(0);
+    }
+
 }

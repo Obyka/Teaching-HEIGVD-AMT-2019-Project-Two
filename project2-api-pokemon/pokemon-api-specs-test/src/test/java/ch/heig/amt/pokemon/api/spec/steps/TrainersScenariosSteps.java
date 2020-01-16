@@ -76,5 +76,4 @@ public class TrainersScenariosSteps {
         assertNotNull(environment.getTrainerWithId());
         assertEquals(arg1, environment.getLastStatusCode());
     }
-
 }

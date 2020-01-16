@@ -25,3 +25,8 @@ Feature: CRUD for Pokemons
     Then I receive a valid token
     When I try to get the pokemon with this new user
     Then The system returns me an error with 404 status code
+    
+  Scenario: get a pokemon that does not exist
+    Given random pokeDexId
+    When I get information about this pokemon
+    Then The system returns me an error with 404 status code

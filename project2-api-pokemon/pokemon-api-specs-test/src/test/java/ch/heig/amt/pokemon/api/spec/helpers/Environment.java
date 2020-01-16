@@ -5,6 +5,8 @@ import ch.heig.amt.pokemon.ApiResponse;
 import ch.heig.amt.pokemon.api.DefaultApi;
 import ch.heig.amt.pokemon.api.dto.Pokemon;
 import ch.heig.amt.pokemon.api.dto.PokemonPut;
+import ch.heig.amt.pokemon.api.dto.TrainerPut;
+import ch.heig.amt.pokemon.api.dto.TrainerWithId;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +30,12 @@ public class Environment {
 
     private PokemonPut pokemonPut = new PokemonPut();
     private Pokemon pokemon = new Pokemon();
+
+    private TrainerPut trainerPut = new TrainerPut();
+    private TrainerWithId trainerWithId = new TrainerWithId();
+
+    private String lastMilliseconds;
+    private int lastMillisecondsInt;
 
     public Environment() throws IOException {
         Properties properties = new Properties();

@@ -153,6 +153,8 @@ paths:
       operationId: createTrainer
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - name: trainer
           in: body

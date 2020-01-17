@@ -49,3 +49,18 @@ Feature: CRUD for Pokemons
     Given modification on Pokemon
     When I update a pokemon
     Then the system returns the 200 status
+
+  Scenario Outline: pagination
+    When I get pokemons at specific page <page> with specific size <size>
+    Then the system returns the 200 status and size <answer>
+
+  Examples:
+    | page      | size | answer |
+    | 0         | 20   |20   |
+    | 2         | 10   |10   |
+    | 3          | 10   |10   |
+    | 0          | 1   |1   |
+
+  Scenario: pagination
+    When I get pokemons at specific page 0 with specific size 0
+    Then The system returns me an error with 500 status code

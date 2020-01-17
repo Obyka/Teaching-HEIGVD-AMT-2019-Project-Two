@@ -266,4 +266,30 @@ public class PokemonsScenariosSteps {
         }
     }
 
+    @When("^I get pokemons at specific page (\\d+) with specific size (\\d+)$")
+    public void i_get_pokemons_at_specific_page_with_specific_size(int arg1, int arg2) throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().getPokemonsWithHttpInfo(arg1, arg2));
+
+            pokemons = (ArrayList<Pokemon>)environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
+
+    @Then("^the system returns the (\\d+) status and size (\\d+)$")
+    public void the_system_returns_the_status_and_size(int arg1, int arg2) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
+        assertEquals(arg2, pokemons.size());
+    }
+
 }

@@ -188,4 +188,54 @@ public class TrainersScenariosSteps {
     public void the_system_returns_me_an_error_with_status_code_with_trainers(int arg1) throws Throwable {
         assertEquals(arg1, environment.getLastStatusCode());
     }
+
+    @When("^I delete all trainers$")
+    public void i_delete_all_trainers() throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().deleteTrainersWithHttpInfo());
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
+
+    @When("^I create (\\d+) trainers$")
+    public void i_create_trainers(int arg1) throws Throwable {
+        environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+        for(int i = 0; i < arg1; ++i) {
+            environment.setLastMilliseconds("" + System.currentTimeMillis());
+            environment.setLastMillisecondsInt(Math.abs((int)System.currentTimeMillis()));
+
+            environment.getTrainerPut().setName("Trainer"+environment.getLastMilliseconds());
+            environment.getTrainerPut().setSurname(environment.getLastMilliseconds());
+            environment.getTrainerPut().setGender("Male");
+            environment.getTrainerPut().setAge(23);
+            environment.getTrainerPut().setNumberOfBadges(10);
+
+            try {
+                environment.setLastApiResponse(environment.getApi().createTrainerWithHttpInfo(environment.getTrainerPut()));
+
+                environment.setTrainerWithId((TrainerWithId) environment.getLastApiResponse().getData());
+
+                environment.setLastApiException(null);
+                environment.setLastApiCallThrewException(false);
+                environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+            } catch (ApiException e) {
+                environment.setLastApiResponse(null);
+                environment.setLastApiCallThrewException(true);
+                environment.setLastApiException(e);
+                environment.setLastStatusCode(environment.getLastApiException().getCode());
+            }
+        }
+    }
+
 }

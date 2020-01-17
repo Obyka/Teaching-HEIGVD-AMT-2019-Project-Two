@@ -5,6 +5,33 @@ Feature: CRUD for Pokemons
     When I make a POST request to /api/login/login
     Then I receive a valid token
 
+  Scenario: add pokemons
+    When I add 20 pokemons
+
+  Scenario Outline: pagination
+    When I get pokemons at specific page <page> with specific size <size>
+    Then the system returns the 200 status and size <answer> with pokemons
+
+    Examples:
+      | page      | size | answer |
+      | 0         | 20   |20   |
+      | 0         | 10   |10   |
+      | 1          | 10   |10   |
+      | 0          | 1   |1   |
+
+  Scenario: pagination
+    When I get pokemons at specific page 0 with specific size 0
+    Then The system returns me an error with 500 status code
+
+  Scenario: delete an unexisted pokemon
+    Given random pokeDexId
+    When I delete this pokemon
+    Then The system returns me an error with 404 status code
+
+  Scenario: delete all pokemons
+    When I delete all pokemons
+    Then the system returns the 204 status
+
   Scenario: create a pokemon and check if it is created
     Given a new pokemon to create
     When I add a new pokemon
@@ -49,18 +76,3 @@ Feature: CRUD for Pokemons
     Given modification on Pokemon
     When I update a pokemon
     Then the system returns the 200 status
-
-  Scenario Outline: pagination
-    When I get pokemons at specific page <page> with specific size <size>
-    Then the system returns the 200 status and size <answer>
-
-  Examples:
-    | page      | size | answer |
-    | 0         | 20   |20   |
-    | 0         | 10   |10   |
-    | 1          | 10   |10   |
-    | 0          | 1   |1   |
-
-  Scenario: pagination
-    When I get pokemons at specific page 0 with specific size 0
-    Then The system returns me an error with 500 status code

@@ -3,10 +3,7 @@ package ch.heig.amt.pokemon.api.spec.helpers;
 import ch.heig.amt.pokemon.ApiException;
 import ch.heig.amt.pokemon.ApiResponse;
 import ch.heig.amt.pokemon.api.DefaultApi;
-import ch.heig.amt.pokemon.api.dto.Pokemon;
-import ch.heig.amt.pokemon.api.dto.PokemonPut;
-import ch.heig.amt.pokemon.api.dto.TrainerPut;
-import ch.heig.amt.pokemon.api.dto.TrainerWithId;
+import ch.heig.amt.pokemon.api.dto.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
@@ -38,6 +35,9 @@ public class Environment {
 
     private TrainerPut trainerPut = new TrainerPut();
     private TrainerWithId trainerWithId = new TrainerWithId();
+
+    private CapturePost capturePost = new CapturePost();
+    private CaptureGet captureGet = new CaptureGet();
 
     private String lastMilliseconds;
     private int lastMillisecondsInt;

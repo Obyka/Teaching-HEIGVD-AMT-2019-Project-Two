@@ -2,6 +2,7 @@ package ch.heig.amt.pokemon.api.spec.steps;
 
 import ch.heig.amt.pokemon.ApiException;
 import ch.heig.amt.pokemon.api.dto.Pokemon;
+import ch.heig.amt.pokemon.api.dto.TrainerWithId;
 import ch.heig.amt.pokemon.api.spec.helpers.Environment;
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
@@ -52,17 +53,17 @@ public class PokemonsScenariosSteps {
         environment.setResponsePostLogin(environment.getResponse().getBody().toString());
 
         environment.setJsonObject(new JSONObject(environment.getResponsePostLogin()));
-        environment.setAdminToken((String)environment.getJsonObject().get("JWTToken"));
+        environment.setAdminToken((String) environment.getJsonObject().get("JWTToken"));
     }
 
 
     @Given("^a new pokemon to create$")
     public void a_new_pokemon_to_create() throws Throwable {
         environment.setLastMilliseconds("" + System.currentTimeMillis());
-        environment.setLastMillisecondsInt(Math.abs((int)System.currentTimeMillis()));
+        environment.setLastMillisecondsInt(Math.abs((int) System.currentTimeMillis()));
 
         environment.getPokemonPut().setPokedexId(environment.getLastMillisecondsInt());
-        environment.getPokemonPut().setName("Pokemon"+environment.getLastMillisecondsInt());
+        environment.getPokemonPut().setName("Pokemon" + environment.getLastMillisecondsInt());
         environment.getPokemonPut().setCategory("Tester");
         environment.getPokemonPut().setType("Testing");
         environment.getPokemonPut().setHeight(10);
@@ -93,6 +94,7 @@ public class PokemonsScenariosSteps {
     public void the_system_returns_the_added_pokemon_with_status(int arg1) throws Throwable {
         assertNotNull(environment.getPokemon());
         assertEquals(arg1, environment.getLastStatusCode());
+        environment.setPokemonId(environment.getPokemon().getPokedexId());
     }
 
     @Given("^This new pokemon$")
@@ -123,10 +125,10 @@ public class PokemonsScenariosSteps {
         lastMilliseconds = "" + System.currentTimeMillis();
 
         environment.setPayloadJson("{\"password\":\"password\"," +
-                "\"username\":\"user"+lastMilliseconds+"\"," +
-                "\"mail\":\""+lastMilliseconds+"@amt.com\"," +
-                "\"firstname\":\"User"+lastMilliseconds+"\"," +
-                "\"lastname\":\""+lastMilliseconds+"\"," +
+                "\"username\":\"user" + lastMilliseconds + "\"," +
+                "\"mail\":\"" + lastMilliseconds + "@amt.com\"," +
+                "\"firstname\":\"User" + lastMilliseconds + "\"," +
+                "\"lastname\":\"" + lastMilliseconds + "\"," +
                 "\"isadmin\": false}");
 
         environment.setLoginUrl("http://localhost:8090/api/login/users");
@@ -150,12 +152,12 @@ public class PokemonsScenariosSteps {
         environment.setResponsePostLogin(environment.getResponse().getBody().toString());
 
         environment.setJsonObject(new JSONObject(environment.getResponsePostLogin()));
-        usernameNewUser = (String)environment.getJsonObject().get("username");
+        usernameNewUser = (String) environment.getJsonObject().get("username");
     }
 
     @Given("^credentials for new user$")
     public void credentials_for_new_user() throws Throwable {
-        environment.setPayloadJson("{\"username\":\""+usernameNewUser+"\",\"password\":\"password\"}");
+        environment.setPayloadJson("{\"username\":\"" + usernameNewUser + "\",\"password\":\"password\"}");
         environment.setLoginUrl("http://localhost:8090/api/login/login");
     }
 
@@ -196,7 +198,7 @@ public class PokemonsScenariosSteps {
 
             environment.setLastApiResponse(environment.getApi().getPokemonsWithHttpInfo(0, 20));
 
-            pokemons = (ArrayList<Pokemon>)environment.getLastApiResponse().getData();
+            pokemons = (ArrayList<Pokemon>) environment.getLastApiResponse().getData();
 
             environment.setLastApiException(null);
             environment.setLastApiCallThrewException(false);
@@ -212,7 +214,6 @@ public class PokemonsScenariosSteps {
     @Then("^I receive all my pokemons belong to me and (\\d+) status code$")
     public void i_receive_all_my_pokemons_belong_to_me_and_status_code(int arg1) throws Throwable {
         assertEquals(arg1, environment.getLastStatusCode());
-        assertEquals(20, pokemons.size());
     }
 
     @When("^I delete this pokemon$")
@@ -220,7 +221,7 @@ public class PokemonsScenariosSteps {
         try {
             environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
 
-            environment.setLastApiResponse(environment.getApi().deletePokemonByIDWithHttpInfo(environment.getPokemon().getPokedexId()));
+            environment.setLastApiResponse(environment.getApi().deletePokemonByIDWithHttpInfo(environment.getPokemonId()));
 
             environment.setLastApiException(null);
             environment.setLastApiCallThrewException(false);
@@ -266,14 +267,42 @@ public class PokemonsScenariosSteps {
         }
     }
 
-    @When("^I get pokemons at specific page (\\d+) with specific size (\\d+)$")
-    public void i_get_pokemons_at_specific_page_with_specific_size(int arg1, int arg2) throws Throwable {
+    @When("^I add (\\d+) pokemons$")
+    public void i_add_pokemons(int arg1) throws Throwable {
+        environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+        for (int i = 0; i < arg1; ++i) {
+            environment.setLastMilliseconds("" + System.currentTimeMillis());
+            environment.setLastMillisecondsInt(Math.abs((int) System.currentTimeMillis()));
+
+            environment.getPokemonPut().setPokedexId(environment.getLastMillisecondsInt());
+            environment.getPokemonPut().setName("Pokemon" + environment.getLastMillisecondsInt());
+            environment.getPokemonPut().setCategory("Tester");
+            environment.getPokemonPut().setType("Testing");
+            environment.getPokemonPut().setHeight(10);
+            environment.getPokemonPut().setHp(20);
+
+            try {
+                environment.setLastApiResponse(environment.getApi().createPokemonWithHttpInfo(environment.getPokemonPut()));
+
+                environment.setLastApiException(null);
+                environment.setLastApiCallThrewException(false);
+                environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+            } catch (ApiException e) {
+                environment.setLastApiResponse(null);
+                environment.setLastApiCallThrewException(true);
+                environment.setLastApiException(e);
+                environment.setLastStatusCode(environment.getLastApiException().getCode());
+            }
+        }
+    }
+
+    @When("^I delete all pokemons$")
+    public void i_delete_all_pokemons() throws Throwable {
         try {
             environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
 
-            environment.setLastApiResponse(environment.getApi().getPokemonsWithHttpInfo(arg1, arg2));
-
-            pokemons = (ArrayList<Pokemon>)environment.getLastApiResponse().getData();
+            environment.setLastApiResponse(environment.getApi().deletePokemonsWithHttpInfo());
 
             environment.setLastApiException(null);
             environment.setLastApiCallThrewException(false);
@@ -286,10 +315,31 @@ public class PokemonsScenariosSteps {
         }
     }
 
-    @Then("^the system returns the (\\d+) status and size (\\d+)$")
-    public void the_system_returns_the_status_and_size(int arg1, int arg2) throws Throwable {
+    @Then("^the system returns the (\\d+) status and size (\\d+) with pokemons$")
+    public void the_system_returns_the_status_and_size_with_pokemons(int arg1, int arg2) throws Throwable {
         assertEquals(arg1, environment.getLastStatusCode());
         assertEquals(arg2, pokemons.size());
     }
+
+    @When("^I get pokemons at specific page (\\d+) with specific size (\\d+)$")
+    public void i_get_pokemons_at_specific_page_with_specific_size(int arg1, int arg2) throws Throwable {
+        try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
+            environment.setLastApiResponse(environment.getApi().getPokemonsWithHttpInfo(arg1, arg2));
+
+            pokemons = (ArrayList<Pokemon>) environment.getLastApiResponse().getData();
+
+            environment.setLastApiException(null);
+            environment.setLastApiCallThrewException(false);
+            environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());
+        } catch (ApiException e) {
+            environment.setLastApiResponse(null);
+            environment.setLastApiCallThrewException(true);
+            environment.setLastApiException(e);
+            environment.setLastStatusCode(environment.getLastApiException().getCode());
+        }
+    }
+
 
 }

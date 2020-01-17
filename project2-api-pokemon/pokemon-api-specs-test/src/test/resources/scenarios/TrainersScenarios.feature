@@ -5,6 +5,33 @@ Feature: CRUD for Trainers
     When I make a POST request to /api/login/login
     Then I receive a valid token
 
+  Scenario: add trainers
+    When I create 20 trainers
+
+  Scenario Outline: pagination
+    And I get trainers at specific page <page> with specific size <size>
+    Then the system returns the 200 status and size <answer> with trainers
+
+    Examples:
+      | page      | size | answer |
+      | 0         | 5   |5   |
+      | 0         | 10   |10   |
+      | 1          | 5   |5   |
+      | 0          | 1   |1   |
+
+  Scenario: pagination
+    When I get trainers at specific page 0 with specific size 0
+    Then The system returns me an error with 500 status code with trainers
+
+  Scenario: delete an unexisted trainer
+    Given random trainer ID
+    When I delete this trainer
+    Then The system returns me an error with 404 status code
+
+  Scenario: delete all trainers
+    When I delete all trainers
+    Then the system returns the 204 status
+
   Scenario: add a new trainer and check if is it created
     Given a new trainer
     When I add a new trainer
@@ -49,17 +76,3 @@ Feature: CRUD for Trainers
     When I update a trainer
     Then the system returns the 200 status
 
-  Scenario Outline: pagination
-    When I get trainers at specific page <page> with specific size <size>
-    Then the system returns the 200 status and size <answer> with trainers
-
-    Examples:
-      | page      | size | answer |
-      | 0         | 5   |5   |
-      | 0         | 10   |10   |
-      | 1          | 5   |5   |
-      | 0          | 1   |1   |
-
-  Scenario: pagination
-    When I get trainers at specific page 0 with specific size 0
-    Then The system returns me an error with 500 status code with trainers

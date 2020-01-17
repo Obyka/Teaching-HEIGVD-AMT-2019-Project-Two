@@ -57,8 +57,8 @@ Feature: CRUD for Pokemons
   Examples:
     | page      | size | answer |
     | 0         | 20   |20   |
-    | 2         | 10   |10   |
-    | 3          | 10   |10   |
+    | 0         | 10   |10   |
+    | 1          | 10   |10   |
     | 0          | 1   |1   |
 
   Scenario: pagination

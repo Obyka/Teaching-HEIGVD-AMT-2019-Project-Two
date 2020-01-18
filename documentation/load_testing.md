@@ -60,3 +60,22 @@ Pour notre méthodologie nous avons suivi ces guidelines :
 | 100000          | 100              | 13700 | 43350 | 37700   |
 | 1000000         | 100              | ERROR | ERROR | ERROR   |
 
+## Graphiques
+
+![image](https://user-images.githubusercontent.com/28777250/72666114-5b5d8f00-3a0f-11ea-8d46-6268d5a2fd9c.png)
+
+![image](https://user-images.githubusercontent.com/28777250/72666123-703a2280-3a0f-11ea-8aaa-f834d552c192.png)
+
+![image](https://user-images.githubusercontent.com/28777250/72666133-80ea9880-3a0f-11ea-82a1-71fbba6fc60c.png)
+
+Pour 1 million d'entités, peu importe le nombre d'utilisateurs, le serveur mets trop longtemps à répondre. 
+
+## Observations et conclusions
+
+Premièrement, nous observons que les API tiennent mieux la charge que lors du projet1 (plus d'entités avant le crash)
+
+C'est dû au fait que les données JSON sont bien plus légères et donc bien plus adaptées pour des tests de charge.
+
+Ensuite, nous pouvons remarquer que parfois, en augmentant le nombre de requêtes, les différents temps de réponses sont en diminution. Notre théorie est la suivante : Lorsque le serveur tient encore bien la charge, il n y a pas de ralentissement non-voulu, et au contraire, c'est après quelques secondes que le serveur a bien "mis en cache" ou du moins a initialisé les différents objets utiles pour le transfert. Ainsi, c'est après plusieurs requêtes qu'il est le plus optimisé, et c'est pour ça que nous voyons les temps baisser.
+
+Finalement, nous avons trouvé le point d'équilibre à 100'000 entités pour 100 utilisateurs. Après cela, si l'on augmente le nombre d'utilisateurs ou le nombres d'entités (1 millions) des crashs vont pouvoir être constatés. 

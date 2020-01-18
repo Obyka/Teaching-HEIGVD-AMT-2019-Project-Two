@@ -37,4 +37,5 @@ Afin de pouvoir effectuer toutes les opérations sur nos API, il faudra tout d'a
 
 Les utilisateurs ont été créés au préalable car selon notre cahier des charges, seul un administrateur peut utiliser la route de création de compte.
 
-
+## Design et implémentation des deux API
+Nous discutions de ces deux aspects dans un fichier markdown à part, appelé `design-impl-api`

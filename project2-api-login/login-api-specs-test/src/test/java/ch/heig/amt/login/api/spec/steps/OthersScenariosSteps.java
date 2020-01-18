@@ -9,6 +9,10 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -54,4 +58,34 @@ public class OthersScenariosSteps {
 
         assertEquals("application/json", (String) array.get(0));
     }
+
+    @Given("^malformed data to insert$")
+    public void malformed_data_to_insert() throws Throwable {
+        environment.setPayloadJson("{\"value\":\"1\"}");
+        environment.setLoginUrl("http://localhost:8090/api/login/login");
+
+        environment.setHttpHeaders(new HttpHeaders());
+        environment.getHttpHeaders().add("Content-Type", "application/json");
+        environment.getHttpHeaders().add("Accept", "application/json");
+
+        environment.setEntity(new HttpEntity<String>(environment.getPayloadJson(), environment.getHttpHeaders()));
+    }
+
+    @When("^I try to insert a bad payload in login$")
+    public void i_try_to_insert_a_bad_payload_in_login() throws Throwable {
+        try {
+            environment.setRestTemplate(new RestTemplate());
+            environment.setResponse(environment.getRestTemplate().postForEntity(environment.getLoginUrl(), environment.getEntity(), String.class));
+
+            environment.setLastStatusCode(environment.getResponse().getStatusCode().value());
+        } catch (HttpClientErrorException e) {
+            environment.setLastStatusCode(e.getStatusCode().value());
+        }
+    }
+
+    @Then("^the system returns the (\\d+) status with an error$")
+    public void the_system_returns_the_status_with_an_error(int arg1) throws Throwable {
+        assertEquals(arg1, environment.getLastStatusCode());
+    }
+
 }

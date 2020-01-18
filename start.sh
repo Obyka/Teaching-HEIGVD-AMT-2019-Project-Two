@@ -4,6 +4,8 @@ mvn clean install -DskipTests
 cp target/*.jar ../../docker/api-login/api-login-1.0.0.jar
 
 cd ../../project2-api-pokemon/spring-server
+mvn clean install -DskipTests
+
 cp target/*.jar ../../docker/api-pokemon/api-pokemon-1.0.0.jar
 cd ../..
 docker-compose -f docker/docker-compose.yaml down

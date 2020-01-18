@@ -5,6 +5,9 @@ Feature: CRUD for Trainers
     When I make a POST request to /api/login/login
     Then I receive a valid token
 
+  Scenario: delete all trainers
+    When I delete all trainers
+
   Scenario: add trainers
     When I create 20 trainers
 
@@ -51,7 +54,7 @@ Feature: CRUD for Trainers
     Then I receive a valid token
     When I get information about this trainer
     Then The system returns me an error with 404 status code
-    
+
   Scenario: get a trainer that does not exist
     Given random trainer ID
     When I get information about this trainer
@@ -76,3 +79,5 @@ Feature: CRUD for Trainers
     When I update a trainer
     Then the system returns the 200 status
 
+  Scenario: delete all trainers
+    When I delete all trainers

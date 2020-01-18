@@ -5,6 +5,9 @@ Feature: CRUD for Pokemons
     When I make a POST request to /api/login/login
     Then I receive a valid token
 
+  Scenario: delete all pokemons
+    When I delete all pokemons
+
   Scenario: add pokemons
     When I add 20 pokemons
 
@@ -52,7 +55,7 @@ Feature: CRUD for Pokemons
     Then I receive a valid token
     When I try to get the pokemon with this new user
     Then The system returns me an error with 404 status code
-    
+
   Scenario: get a pokemon that does not exist
     Given random pokeDexId
     When I get information about this pokemon
@@ -61,7 +64,7 @@ Feature: CRUD for Pokemons
   Scenario: get all pokemons belong to administrator
     When I get all pokemons
     Then I receive all my pokemons belong to me and 200 status code
-    
+
   Scenario: create and delete a pokemon
     Given a new pokemon to create
     When I add a new pokemon
@@ -76,3 +79,6 @@ Feature: CRUD for Pokemons
     Given modification on Pokemon
     When I update a pokemon
     Then the system returns the 200 status
+
+  Scenario: delete all pokemons
+    When I delete all pokemons

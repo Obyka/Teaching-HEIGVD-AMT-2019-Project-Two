@@ -230,6 +230,8 @@ paths:
       operationId: createCapture
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - name: capture
           in: body
@@ -251,7 +253,7 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        '201':
           description: success
           schema:
             type: array

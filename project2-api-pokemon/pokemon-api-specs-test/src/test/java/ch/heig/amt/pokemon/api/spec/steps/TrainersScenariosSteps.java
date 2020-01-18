@@ -226,6 +226,8 @@ public class TrainersScenariosSteps {
 
                 environment.setTrainerWithId((TrainerWithId) environment.getLastApiResponse().getData());
 
+                environment.getAddedTrainers().add(environment.getTrainerWithId());
+
                 environment.setLastApiException(null);
                 environment.setLastApiCallThrewException(false);
                 environment.setLastStatusCode(environment.getLastApiResponse().getStatusCode());

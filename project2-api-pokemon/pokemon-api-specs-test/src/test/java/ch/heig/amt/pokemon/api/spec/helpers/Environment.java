@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -54,6 +55,9 @@ public class Environment {
 
     private String responsePostLogin;
     private String adminToken;
+
+    private ArrayList<Pokemon> addedPokemons = new ArrayList<>();
+    private ArrayList<TrainerWithId> addedTrainers = new ArrayList<>();
 
     public Environment() throws IOException {
         Properties properties = new Properties();

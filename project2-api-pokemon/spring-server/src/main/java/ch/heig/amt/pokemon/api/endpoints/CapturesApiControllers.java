@@ -62,13 +62,20 @@ public class CapturesApiControllers implements CapturesApi {
         userRepository.save(userEntity);
         CaptureEntity captureReturned = captureRepository.save(toEntity(capture));
 
-        return ResponseEntity.ok(toCaptureGet(captureReturned));
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(captureReturned.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(toCaptureGet(captureReturned));
     }
 
     public ResponseEntity<List<CaptureGet>> getPokemonWithTrainers(@ApiParam(value = "pokemon ID",required=true) @PathVariable("id_pokemon") Integer idPokemon,@ApiParam(value = "The page number to get", defaultValue = "0") @Valid @RequestParam(value = "page", required = false, defaultValue="0") Integer page,@ApiParam(value = "The size of a page", defaultValue = "20") @Valid @RequestParam(value = "size", required = false, defaultValue="20") Integer size) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        Optional<PokemonEntity> optionalPokemon = pokemonRepository.findById(idPokemon);
+        Optional<PokemonEntity> optionalPokemon = pokemonRepository.findByPokeDexIdAndIdUser(idPokemon, idUser);
+
+        if(!optionalPokemon.isPresent()) {
+            throw new PokemonNotFoundException("Pokemon with id " + idPokemon + " not found or does not belong to you");
+        }
+
         PokemonEntity pokemonEntity = optionalPokemon.get();
         Pageable paging = PageRequest.of(page, size);
         Page<CaptureEntity> captureEntityPage = captureRepository.findAllByPokemonAndIdUser(pokemonEntity,idUser, paging);
@@ -80,7 +87,12 @@ public class CapturesApiControllers implements CapturesApi {
     public ResponseEntity<List<CaptureGet>> getTrainerWithPokemons(@ApiParam(value = "trainer ID",required=true) @PathVariable("id_trainer") Integer idTrainer,@ApiParam(value = "The page number to get", defaultValue = "0") @Valid @RequestParam(value = "page", required = false, defaultValue="0") Integer page,@ApiParam(value = "The size of a page", defaultValue = "20") @Valid @RequestParam(value = "size", required = false, defaultValue="20") Integer size) {
         Integer idUser = (Integer)request.getAttribute("idUser");
 
-        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findById(idTrainer);
+        Optional<TrainerEntity> optionalTrainerEntity = trainerRepository.findByTrainerIdAndIdUser(idTrainer, idUser);
+
+        if(!optionalTrainerEntity.isPresent()) {
+            throw new TrainerNotFoundException("Trainer with ID " + idTrainer + " not found or does not belong to you");
+        }
+
         TrainerEntity trainerEntity = optionalTrainerEntity.get();
         Pageable paging = PageRequest.of(page, size);
         Page<CaptureEntity> captureEntityPage = captureRepository.findAllByTrainerAndIdUser(trainerEntity,idUser, paging);
@@ -116,8 +128,6 @@ public class CapturesApiControllers implements CapturesApi {
         if(!optionalPokemonEntity.isPresent()) {
             throw new PokemonNotFoundException("Pokemon with ID " + capture.getIdPokemon() + " does not belong to you or does not exist.");
         }
-
-
 
         captureEntity.setIdUser(idUser);
         captureEntity.setTrainer(optionalTrainerEntity.get());

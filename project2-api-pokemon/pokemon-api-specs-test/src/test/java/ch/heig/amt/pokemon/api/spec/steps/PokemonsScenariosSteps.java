@@ -54,6 +54,8 @@ public class PokemonsScenariosSteps {
 
         environment.setJsonObject(new JSONObject(environment.getResponsePostLogin()));
         environment.setAdminToken((String) environment.getJsonObject().get("JWTToken"));
+
+        environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
     }
 
 
@@ -75,6 +77,8 @@ public class PokemonsScenariosSteps {
     @When("^I add a new pokemon$")
     public void i_add_a_new_pokemon() throws Throwable {
         try {
+            environment.getApi().getApiClient().addDefaultHeader("Authorization", environment.getAdminToken());
+
             environment.setLastApiResponse(environment.getApi().createPokemonWithHttpInfo(environment.getPokemonPut()));
 
             environment.setPokemon((Pokemon) environment.getLastApiResponse().getData());
@@ -284,6 +288,10 @@ public class PokemonsScenariosSteps {
 
             try {
                 environment.setLastApiResponse(environment.getApi().createPokemonWithHttpInfo(environment.getPokemonPut()));
+
+                environment.setPokemon((Pokemon)environment.getLastApiResponse().getData());
+
+                environment.getAddedPokemons().add(environment.getPokemon());
 
                 environment.setLastApiException(null);
                 environment.setLastApiCallThrewException(false);

@@ -4,7 +4,7 @@ info:
   title: Users for Pokemon API
   description: An API to manage users for Pokemon API
 host: localhost:8090
-basePath: /api
+basePath: /api/login
 schemes:
   - http
 paths:
@@ -14,6 +14,8 @@ paths:
       operationId: login
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - name: credentials
           in: body
@@ -21,7 +23,7 @@ paths:
           schema:
             $ref: '#/definitions/Credentials'
       responses:
-        '201':
+        '200':
           description: logged successfully
           schema:
             $ref: '#/definitions/ValidCreds'
@@ -33,20 +35,26 @@ paths:
       operationId: getUser
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - in: header
           name: Authorization
           type: string
           required: true
       responses:
-        '201':
+        '200':
           description: retrieved account info
           schema:
             $ref: '#/definitions/UserToGet'
+        '401':
+          description: access denied
     post:
       description: create an account
       operationId: createAccount
       consumes:
+        - application/json
+      produces:
         - application/json
       parameters:
         - in: header
@@ -72,6 +80,8 @@ paths:
       operationId: changePassword
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - in: header
           name: Authorization
@@ -87,6 +97,8 @@ paths:
           description: account created
           schema:
             $ref: '#/definitions/UserToGet'
+        '401':
+          description: bad login
 definitions:
   BaseUser:
     type: object

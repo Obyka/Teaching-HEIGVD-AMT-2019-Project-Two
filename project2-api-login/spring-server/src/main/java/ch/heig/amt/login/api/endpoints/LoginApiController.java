@@ -28,6 +28,11 @@ public class LoginApiController implements LoginApi {
 
 
         UserEntity fetchedUserEntity = userRepository.findByusername(credentials.getUsername());
+
+        if(fetchedUserEntity == null) {
+            throw new BadLoginException("Bad login");
+        }
+
         ValidCreds validCreds = new ValidCreds();
 
         Boolean validPass;
@@ -43,6 +48,7 @@ public class LoginApiController implements LoginApi {
         } else{
             throw new BadLoginException("Bad login");
         }
+
         return ResponseEntity.ok(validCreds);
     }
 }

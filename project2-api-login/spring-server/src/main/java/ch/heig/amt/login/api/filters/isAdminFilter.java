@@ -31,7 +31,8 @@ public class isAdminFilter implements Filter {
             validToken = false;
         }
         if((!validToken || !(boolean)claims.get("isadmin")) && request.getMethod().equals("POST")){
-            throw new ForbiddenException("Invalid auth token");
+            response.sendError(403, "Invalid auth token");
+            return;
         }
 
         //call next filter in the filter chain

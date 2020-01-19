@@ -53,6 +53,7 @@ public class UsersApiController implements UsersApi {
         userEntity.setPassword(finalHashedPass);
         UserEntity createdUserEntity = userRepository.save(userEntity);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdUserEntity.getId()).toUri();
+
         return ResponseEntity.created(uri).body(toUserToGet(createdUserEntity));
     }
 

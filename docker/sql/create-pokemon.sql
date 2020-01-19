@@ -51,8 +51,8 @@ CREATE TABLE `capture_entity` (
   PRIMARY KEY (`id`),
   KEY `FKam7tb1vw3d976v2jwk31nu23n` (`id_pokemon`),
   KEY `FKpu2jsg55ol4v4ibdq7lhjnl2s` (`id_trainer`),
-  CONSTRAINT `FKam7tb1vw3d976v2jwk31nu23n` FOREIGN KEY (`id_pokemon`) REFERENCES `pokemon_entity` (`poke_dex_id`),
-  CONSTRAINT `FKpu2jsg55ol4v4ibdq7lhjnl2s` FOREIGN KEY (`id_trainer`) REFERENCES `trainer_entity` (`trainer_id`)
+  CONSTRAINT `FKam7tb1vw3d976v2jwk31nu23n` FOREIGN KEY (`id_pokemon`) REFERENCES `pokemon_entity` (`poke_dex_id`) ON DELETE CASCADE,
+  CONSTRAINT `FKpu2jsg55ol4v4ibdq7lhjnl2s` FOREIGN KEY (`id_trainer`) REFERENCES `trainer_entity` (`trainer_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

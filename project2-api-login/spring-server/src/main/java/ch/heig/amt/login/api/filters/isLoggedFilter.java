@@ -32,7 +32,8 @@ public class isLoggedFilter implements Filter {
             validToken = false;
         }
         if(!validToken){
-            throw new ForbiddenException("Invalid auth token");
+            response.sendError(403, "Invalid auth token");
+            return;
         }
 
         //call next filter in the filter chain

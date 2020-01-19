@@ -23,7 +23,7 @@ public class OthersScenariosSteps {
     @Given("^malformed data to insert$")
     public void malformed_data_to_insert() throws Throwable {
         environment.setPayloadJson("{\"value\":\"1\"}");
-        environment.setLoginUrl("http://localhost:8080/api/pokemon/pokemons");
+        environment.setLoginUrl("http://localhost/api/pokemon/pokemons");
 
         environment.setHttpHeaders(new HttpHeaders());
         environment.getHttpHeaders().add("Authorization", environment.getAdminToken());

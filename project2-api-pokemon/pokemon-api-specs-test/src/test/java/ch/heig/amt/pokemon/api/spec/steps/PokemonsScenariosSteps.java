@@ -33,7 +33,7 @@ public class PokemonsScenariosSteps {
     @Given("^payload JSON and HTTP data and header$")
     public void payload_JSON_and_HTTP_data_and_header() throws Throwable {
         environment.setPayloadJson("{\"username\":\"admin\",\"password\":\"password\"}");
-        environment.setLoginUrl("http://localhost:8090/api/login/login");
+        environment.setLoginUrl("http://localhost/api/login/login");
 
         environment.setHttpHeaders(new HttpHeaders());
         environment.getHttpHeaders().add("Content-Type", "application/json");
@@ -135,7 +135,7 @@ public class PokemonsScenariosSteps {
                 "\"lastname\":\"" + lastMilliseconds + "\"," +
                 "\"isadmin\": false}");
 
-        environment.setLoginUrl("http://localhost:8090/api/login/users");
+        environment.setLoginUrl("http://localhost/api/login/users");
 
         environment.setHttpHeaders(new HttpHeaders());
         environment.getHttpHeaders().add("Content-Type", "application/json");
@@ -162,7 +162,7 @@ public class PokemonsScenariosSteps {
     @Given("^credentials for new user$")
     public void credentials_for_new_user() throws Throwable {
         environment.setPayloadJson("{\"username\":\"" + usernameNewUser + "\",\"password\":\"password\"}");
-        environment.setLoginUrl("http://localhost:8090/api/login/login");
+        environment.setLoginUrl("http://localhost/api/login/login");
     }
 
     @When("^I try to get the pokemon with this new user$")

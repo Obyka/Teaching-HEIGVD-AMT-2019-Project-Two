@@ -8,6 +8,7 @@ Pour le projet 2 du cours d'AMT, nous avons conceptualisé et développé deux A
 
 - Cloner le repo
 - Lancer `start.sh`
+- Pour lancer les tests, attendre que l'infrastructure soit démarée puis exécuter `test.sh`
 
 Après un certain temps, le projet est prêt à être utilisé et quatres containters ont été déployés, examinons-les ensemble.
 
@@ -39,3 +40,10 @@ Les utilisateurs ont été créés au préalable car selon notre cahier des char
 
 ## Design et implémentation des deux API
 Nous discutions de ces deux aspects dans un fichier markdown à part, appelé `design-impl-api`
+
+## Suite du rapport
+Vous pouvez trouver plus de détails dans les fichiers :
+- [Bugs, limitation et erreurs de conceptions](documentation/bugs-limitations.md)
+- [Documentation des tests cucumber](documentation/cucumber_testing.md)
+- [Choix de design et d'implémentations](documentation/design-impl-api.md)
+- [Documentation des tests JMeter](documentation/load_testing.md)

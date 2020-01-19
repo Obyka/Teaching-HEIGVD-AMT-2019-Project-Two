@@ -32,7 +32,7 @@ services:
       - docker-mysql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pokemon-api.rule=Host(`localhost`) && PathPrefix(`/api/pokemon`)"
+      - "traefik.http.routers.pokemon-api.rule=PathPrefix(`/api/pokemon`)"
       - "traefik.http.services.pokemon-api.loadbalancer.server.port=8080"
   login-api:
     build: api-login/
@@ -44,5 +44,5 @@ services:
       - docker-mysql
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.login-api.rule=Host(`localhost`) && PathPrefix(`/api/login`)"
+      - "traefik.http.routers.login-api.rule=PathPrefix(`/api/login`)"
       - "traefik.http.services.login-api.loadbalancer.server.port=8090"

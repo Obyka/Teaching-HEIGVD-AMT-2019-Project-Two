@@ -1,4 +1,7 @@
 # Choix de design et d'implémentation de nos API
+Notre business domain est le suivant : les pokémons qui peuvent se faire capturer par des trainers. Pour ceci, nous avons réalisé une API qui permet de gérer les pokémons, les trainers et les captures.
+
+Une deuxième API est demandé qui sera pour la gestion des utilisateurs et permettant la connexion afin de pouvoir utiliser l'API Pokemon à l'aide d'un token.
 
 ## Spec et design de login API
 

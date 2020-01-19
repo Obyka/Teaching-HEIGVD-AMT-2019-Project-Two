@@ -3,6 +3,11 @@ Notre business domain est le suivant : les pokémons qui peuvent se faire captur
 
 Une deuxième API est demandé qui sera pour la gestion des utilisateurs et permettant la connexion afin de pouvoir utiliser l'API Pokemon à l'aide d'un token.
 
+## Schéma des deux bases de données
+
+![Schéma base de données](https://user-images.githubusercontent.com/28777250/72686566-6fc88700-3af6-11ea-9d67-fdfdaecb66a6.png)
+
+
 ## Spec et design de login API
 
 La "login API" est notre API qui permettra de gérer des utilisateurs. Voici les différents DTO qui nous permettent d'interagir entre l'API et l'utilisateur

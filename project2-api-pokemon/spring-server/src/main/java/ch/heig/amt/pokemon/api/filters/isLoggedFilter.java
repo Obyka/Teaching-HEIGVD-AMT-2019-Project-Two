@@ -21,6 +21,12 @@ public class isLoggedFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        String path = request.getRequestURI();
+        if (path.contains("swagger") || path.contains("api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = request.getHeader("Authorization");
         Claims claims = null;
         Boolean validToken = true;

@@ -159,10 +159,19 @@ public class PokemonsScenariosSteps {
         usernameNewUser = (String) environment.getJsonObject().get("username");
     }
 
+    @When("^I make a POST request to /api/login/login for administrator$")
+    public void i_make_a_POST_request_to_api_login_login_for_administrator() throws Throwable {
+        environment.setRestTemplate(new RestTemplate());
+        environment.setResponse(environment.getRestTemplate().postForEntity(environment.getLoginUrl(), environment.getEntity(), String.class));
+    }
+
+
     @Given("^credentials for new user$")
     public void credentials_for_new_user() throws Throwable {
         environment.setPayloadJson("{\"username\":\"" + usernameNewUser + "\",\"password\":\"password\"}");
         environment.setLoginUrl("http://localhost/api/login/login");
+
+        environment.setEntity(new HttpEntity<String>(environment.getPayloadJson(), environment.getHttpHeaders()));
     }
 
     @When("^I try to get the pokemon with this new user$")

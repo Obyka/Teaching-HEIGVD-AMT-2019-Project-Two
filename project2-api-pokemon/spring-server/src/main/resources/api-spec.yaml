@@ -45,6 +45,8 @@ paths:
       operationId: createPokemon
       consumes:
         - application/json
+      produces:
+        - application/json
       parameters:
         - name: pokemon
           in: body
@@ -150,6 +152,8 @@ paths:
       description: create a trainer
       operationId: createTrainer
       consumes:
+        - application/json
+      produces:
         - application/json
       parameters:
         - name: trainer

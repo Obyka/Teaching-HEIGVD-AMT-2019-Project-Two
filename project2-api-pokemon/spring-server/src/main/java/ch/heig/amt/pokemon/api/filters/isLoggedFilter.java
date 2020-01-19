@@ -29,7 +29,8 @@ public class isLoggedFilter implements Filter {
             request.setAttribute("username", claims.getSubject());
             request.setAttribute("idUser", claims.get("iduser"));
         } catch (Exception e){
-            throw new ForbiddenException("Invalid auth token");
+            response.sendError(403, "Invalid auth token");
+            return;
         }
 
         //call next filter in the filter chain

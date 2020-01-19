@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 public class OthersScenariosSteps {
     private Environment environment;
-    private Collection collection;
+    private Map<String, List<String>> collection;
     private Set<Map.Entry> entries;
 
     public OthersScenariosSteps(Environment environment) {
@@ -53,10 +53,10 @@ public class OthersScenariosSteps {
 
     @Then("^the system returns me a payload that is a valid payload$")
     public void the_system_returns_me_a_payload_that_is_a_valid_payload() throws Throwable {
-        collection = environment.getLastApiResponse().getHeaders().values();
-        ArrayList array = (ArrayList) collection.iterator().next();
+        collection = environment.getLastApiResponse().getHeaders();
 
-        assertEquals("application/json", (String) array.get(0));
+
+        assertEquals("application/json", collection.get("content-type").get(0));
     }
 
     @Given("^malformed data to insert$")
